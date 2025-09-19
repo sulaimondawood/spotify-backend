@@ -12,7 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.dawood.spotify.entities.User;
 import com.dawood.spotify.services.CustomUserDetailsService;
 import com.dawood.spotify.utils.ErrorResponseWriter;
 import com.dawood.spotify.utils.JwtUtils;
