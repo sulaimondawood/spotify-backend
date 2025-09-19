@@ -67,7 +67,7 @@ public class JwtFilter extends OncePerRequestFilter {
       }
 
       catch (Exception e) {
-        log.error("Invalid or expired authorization token", e);
+        log.error("Something went wrong", e);
         ErrorResponseWriter.write(response, e.getMessage(), HttpServletResponse.SC_FORBIDDEN);
         return;
       }
