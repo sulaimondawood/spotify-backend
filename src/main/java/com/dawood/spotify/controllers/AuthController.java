@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dawood.spotify.dtos.ApiResponse;
+import com.dawood.spotify.dtos.auth.ActivationRequest;
 import com.dawood.spotify.dtos.auth.AuthRequestDTO;
 import com.dawood.spotify.services.AuthService;
 import com.dawood.spotify.validations.RegisterRequestGroup;
@@ -37,6 +38,14 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<Object> login(@Valid @RequestBody AuthRequestDTO request) {
     return ApiResponse.responseBuilder(authService.login(request), "Login successfull", HttpStatus.OK);
+  }
+
+  @PostMapping("activate-account")
+  public ResponseEntity<Object> activate(@Valid @RequestBody ActivationRequest request) {
+
+    return ApiResponse.responseBuilder(authService.activateAccount(request.getCode()),
+        authService.activateAccount(request.getCode()),
+        HttpStatus.OK);
   }
 
 }

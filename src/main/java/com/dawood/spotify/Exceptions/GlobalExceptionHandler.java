@@ -18,6 +18,32 @@ import com.dawood.spotify.dtos.ErrorReponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(InvalidCodeException.class)
+  public ResponseEntity<ErrorReponse> InvalidCodeExceptionHandler(
+      InvalidCodeException ex) {
+
+    ErrorReponse response = new ErrorReponse();
+
+    response.setMessage(ex.getMessage());
+    response.setStatus(HttpStatus.BAD_REQUEST.value());
+
+    return ResponseEntity.badRequest().body(response);
+
+  }
+
+  @ExceptionHandler(UserException.class)
+  public ResponseEntity<ErrorReponse> userExceptionHandler(
+      UserException ex) {
+
+    ErrorReponse response = new ErrorReponse();
+
+    response.setMessage(ex.getMessage());
+    response.setStatus(HttpStatus.BAD_REQUEST.value());
+
+    return ResponseEntity.badRequest().body(response);
+
+  }
+
   // Mail Exceptions
   @ExceptionHandler(MailException.class)
   public ResponseEntity<ErrorReponse> mailExceptionHandler(

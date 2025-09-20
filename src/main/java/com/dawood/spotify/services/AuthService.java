@@ -6,8 +6,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.dawood.spotify.Exceptions.InvalidCodeException;
 import com.dawood.spotify.Exceptions.UserAlreadyExists;
+import com.dawood.spotify.Exceptions.UserException;
 import com.dawood.spotify.Exceptions.UserNotFoundException;
 import com.dawood.spotify.dtos.auth.AuthRequestDTO;
 import com.dawood.spotify.dtos.auth.RegisterResponseDTO;
@@ -76,6 +79,10 @@ public class AuthService {
     User user = userRepository.findByEmail(requestDTO.getEmail())
         .orElseThrow(() -> new UserNotFoundException());
 
+    if (!user.isActive()) {
+      throw new UserException("Your account is not activated!");
+    }
+
     if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
       throw new IllegalArgumentException("Incorrect email or password");
     }
@@ -86,6 +93,24 @@ public class AuthService {
 
     return token;
 
+  }
+
+  public String activateAccount(int code) {
+
+    VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
+        .orElseThrow(() -> new InvalidCodeException("Invalid verification code"));
+
+    if (verificationCode.getExpiresAt().isBefore(LocalDateTime.now())) {
+      throw new InvalidCodeException("Verification code has expired!");
+    }
+
+    User user = verificationCode.getUser();
+    user.setActive(true);
+
+    userRepository.save(user);
+    verificationCodeRepository.delete(verificationCode);
+
+    return "User account activated!";
   }
 
   private RegisterResponseDTO toDTO(User user) {
