@@ -1,13 +1,18 @@
 package com.dawood.spotify.entities;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.dawood.spotify.enums.RoleType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -47,11 +52,10 @@ public class User {
 
   private String bio;
 
-  @ManyToMany
-  @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user-id"), inverseJoinColumns = @JoinColumn(name = "roles-id"))
-  private List<UserRole> roles;
+  @Enumerated(EnumType.STRING)
+  private List<RoleType> roles = new ArrayList<>();
 
-  private boolean isActive;
+  private boolean active;
 
   @CreationTimestamp
   @Column(updatable = false)

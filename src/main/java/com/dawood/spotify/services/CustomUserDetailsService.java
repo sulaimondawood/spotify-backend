@@ -1,7 +1,6 @@
 package com.dawood.spotify.services;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     Collection<? extends GrantedAuthority> authorities = user.getRoles()
         .stream()
-        .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+        .map(role -> new SimpleGrantedAuthority(role.name()))
         .toList();
 
     return org.springframework.security.core.userdetails.User.builder()

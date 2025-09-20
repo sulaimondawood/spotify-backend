@@ -15,7 +15,7 @@ public class ApiResponse {
     Map<String, Object> response = Map.of(
         "message", message,
         "data", data,
-        "status", status);
+        "status", status.value());
 
     return ResponseEntity.status(status).body(response);
 

@@ -1,14 +1,17 @@
 package com.dawood.spotify.services;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.dawood.spotify.Exceptions.UserAlreadyExists;
+import com.dawood.spotify.Exceptions.UserNotFoundException;
 import com.dawood.spotify.dtos.auth.AuthRequestDTO;
 import com.dawood.spotify.dtos.auth.RegisterResponseDTO;
 import com.dawood.spotify.entities.User;
-import com.dawood.spotify.entities.UserRole;
 import com.dawood.spotify.repositories.UserRepository;
+import com.dawood.spotify.utils.JwtUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +21,8 @@ public class AuthService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtUtils jwtUtils;
+  private final CustomUserDetailsService customUserDetailsService;
 
   public RegisterResponseDTO register(AuthRequestDTO request) {
 
@@ -27,17 +32,31 @@ public class AuthService {
 
     User user = new User();
 
-    UserRole role = new UserRole();
-    role.setName(request.getRole());
-
     user.setActive(false);
     user.setEmail(request.getEmail());
     user.setPassword(passwordEncoder.encode(request.getPassword()));
-    user.getRoles().add(role);
+    user.getRoles().add(request.getRole());
 
     User savedUser = userRepository.save(user);
 
     return toDTO(savedUser);
+
+  }
+
+  public String login(AuthRequestDTO requestDTO) {
+
+    User user = userRepository.findByEmail(requestDTO.getEmail())
+        .orElseThrow(() -> new UserNotFoundException());
+
+    if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
+      throw new IllegalArgumentException("Incorrect email or password");
+    }
+
+    UserDetails userDetails = customUserDetailsService.loadUserByUsername(requestDTO.getEmail());
+
+    String token = jwtUtils.generateString(userDetails);
+
+    return token;
 
   }
 

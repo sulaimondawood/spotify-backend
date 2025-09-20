@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,10 @@ public class JwtUtils {
       return JWT.create()
           .withSubject(user.getUsername())
           .withIssuer("Dawood_Spotify")
-          .withClaim("roles", user.getAuthorities().stream().toList())
+          .withClaim("roles", user.getAuthorities().stream()
+              .map(GrantedAuthority::getAuthority)
+              .toList())
+
           .withExpiresAt(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
           .withIssuedAt(Instant.now())
           .sign(algorithm);

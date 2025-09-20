@@ -1,5 +1,5 @@
 package com.dawood.spotify.validations;
 
-public class LoginRequestGroup {
+public interface LoginRequestGroup {
 
 }
