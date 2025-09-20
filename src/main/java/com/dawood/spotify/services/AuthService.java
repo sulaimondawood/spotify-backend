@@ -1,5 +1,7 @@
 package com.dawood.spotify.services;
 
+import java.time.LocalDateTime;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,8 +12,11 @@ import com.dawood.spotify.Exceptions.UserNotFoundException;
 import com.dawood.spotify.dtos.auth.AuthRequestDTO;
 import com.dawood.spotify.dtos.auth.RegisterResponseDTO;
 import com.dawood.spotify.entities.User;
+import com.dawood.spotify.entities.VerificationCode;
 import com.dawood.spotify.repositories.UserRepository;
+import com.dawood.spotify.repositories.VerificationCodeRepository;
 import com.dawood.spotify.utils.JwtUtils;
+import com.dawood.spotify.utils.VerificationUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +28,8 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final JwtUtils jwtUtils;
   private final CustomUserDetailsService customUserDetailsService;
+  private final EmailService emailService;
+  private final VerificationCodeRepository verificationCodeRepository;
 
   public RegisterResponseDTO register(AuthRequestDTO request) {
 
@@ -31,13 +38,33 @@ public class AuthService {
     }
 
     User user = new User();
-
     user.setActive(false);
+    user.setFullname(request.getFullname());
     user.setEmail(request.getEmail());
     user.setPassword(passwordEncoder.encode(request.getPassword()));
     user.getRoles().add(request.getRole());
 
     User savedUser = userRepository.save(user);
+
+    VerificationCode verificationCode = new VerificationCode();
+    verificationCode.setCode(VerificationUtils.generateSixDigitsCode());
+    verificationCode.setExpiresAt(LocalDateTime.now().plusMinutes(15));
+    verificationCode.setUser(savedUser);
+
+    verificationCodeRepository.save(verificationCode);
+
+    String body = """
+        Hello %s,
+
+        Welcome to Spotify-Dawood, your activation code is: %d
+
+        Please verify your account withinf 15 minutes.
+
+        Regards,
+        Spotify-Dawood Team.
+        """.formatted(savedUser.getFullname(), verificationCode.getCode());
+
+    emailService.sendSimpleMail(savedUser.getEmail(), "Activate Your Spotify Profile - Dawood", body);
 
     return toDTO(savedUser);
 
@@ -64,8 +91,7 @@ public class AuthService {
     RegisterResponseDTO registerResponseDTO = RegisterResponseDTO.builder()
         .id(user.getId())
         .email(user.getEmail())
-        .photoUrl(user.getPhotoUrl())
-        .username(user.getUsername())
+        .fullname(user.getFullname())
         .build();
 
     return registerResponseDTO;

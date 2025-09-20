@@ -11,8 +11,6 @@ public class RegisterResponseDTO {
 
   private String email;
 
-  private String username;
-
-  private String photoUrl;
+  private String fullname;
 
 }

@@ -15,6 +15,9 @@ public class AuthRequestDTO {
   @Email(message = "Invalid email format")
   private String email;
 
+  @NotBlank(message = "Fullname is required", groups = { RegisterRequestGroup.class })
+  private String fullname;
+
   @NotBlank(message = "Password is required")
   private String password;
 

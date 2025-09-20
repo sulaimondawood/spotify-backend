@@ -1,0 +1,10 @@
+services:
+  rabbitMq:
+    container_name: rabbitMq
+    image: rabbitmq:4.1-alpine
+    ports:
+      - 5656:5656
+      - 1567:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin

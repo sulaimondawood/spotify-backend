@@ -34,12 +34,17 @@ spring:
           auth: true
           starttls:
             enable: true
-            required: true
 
-# logging:
-#   level:
-#     root: info
-#     "[com.dawood.spotify]": debug
+  rabbitmq:
+    host: localhost
+    port: 5656
+    username: ${RBMQ_PASSWORD}
+    password: ${RBMQ_PASSWORD}
+
+logging:
+  level:
+    root: info
+    "[com.dawood.spotify]": debug
 
 app:
   jwt:

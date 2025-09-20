@@ -22,7 +22,7 @@ public class EmailService {
   private final JavaMailSender javaMailSender;
 
   @Value("${spring.application.name}")
-  private final String sender;
+  private String sender;
 
   public void sendSimpleMail(String to, String subject, String body) {
 
@@ -37,7 +37,9 @@ public class EmailService {
       message.setSubject(subject);
       message.setText(body);
 
+      log.info("sending email");
       javaMailSender.send(message);
+
     } catch (Exception e) {
       log.error(e.getMessage());
     }
