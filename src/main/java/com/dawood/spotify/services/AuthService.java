@@ -13,6 +13,7 @@ import com.dawood.spotify.dtos.auth.AuthRequestDTO;
 import com.dawood.spotify.dtos.auth.RegisterResponseDTO;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.entities.VerificationCode;
+import com.dawood.spotify.messaging.publisher.MQEmailProducer;
 import com.dawood.spotify.repositories.UserRepository;
 import com.dawood.spotify.repositories.VerificationCodeRepository;
 import com.dawood.spotify.utils.JwtUtils;
@@ -28,8 +29,8 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final JwtUtils jwtUtils;
   private final CustomUserDetailsService customUserDetailsService;
-  private final EmailService emailService;
   private final VerificationCodeRepository verificationCodeRepository;
+  private final MQEmailProducer mqEmailProducer;
 
   public RegisterResponseDTO register(AuthRequestDTO request) {
 
@@ -58,13 +59,13 @@ public class AuthService {
 
         Welcome to Spotify-Dawood, your activation code is: %d
 
-        Please verify your account withinf 15 minutes.
+        Please verify your account within 15 minutes.
 
         Regards,
         Spotify-Dawood Team.
         """.formatted(savedUser.getFullname(), verificationCode.getCode());
 
-    emailService.sendSimpleMail(savedUser.getEmail(), "Activate Your Spotify Profile - Dawood", body);
+    mqEmailProducer.sendMessage(savedUser.getEmail(), "Activate Your Spotify Profile - Dawood", body);
 
     return toDTO(savedUser);
 
