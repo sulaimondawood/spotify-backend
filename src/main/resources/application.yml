@@ -17,8 +17,31 @@ spring:
   jpa:
     database: mysql
     hibernate:
-      ddl-auto: none
-    show-sql: true
+      ddl-auto: update
+
+  mail:
+    host: ${MAIL_HOST}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: ${MAIL_PORT}
     properties:
-      hibernate:
-        format_sql: true
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RBMQ_PASSWORD}
+    password: ${RBMQ_PASSWORD}
+
+logging:
+  level:
+    root: info
+    "[com.dawood.spotify]": debug
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
