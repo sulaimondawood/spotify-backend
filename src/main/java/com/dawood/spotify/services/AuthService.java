@@ -2,11 +2,9 @@ package com.dawood.spotify.services;
 
 import java.time.LocalDateTime;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.dawood.spotify.Exceptions.InvalidCodeException;
 import com.dawood.spotify.Exceptions.UserAlreadyExists;
