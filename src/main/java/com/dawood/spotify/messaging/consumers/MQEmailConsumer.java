@@ -1,4 +1,4 @@
-package com.dawood.spotify.messaging.consumer;
+package com.dawood.spotify.messaging.consumers;
 
 import java.util.Map;
 

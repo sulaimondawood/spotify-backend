@@ -1,4 +1,4 @@
-package com.dawood.spotify.messaging.publisher;
+package com.dawood.spotify.messaging.publishers;
 
 import java.util.Map;
 
