@@ -5,7 +5,7 @@ import java.util.Map;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import com.dawood.spotify.configs.RabbitMqConfig;
+import com.dawood.spotify.messaging.configs.RabbitMqConfig;
 import com.dawood.spotify.services.EmailService;
 
 import lombok.RequiredArgsConstructor;

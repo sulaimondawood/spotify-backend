@@ -1,4 +1,4 @@
-package com.dawood.spotify.configs;
+package com.dawood.spotify.messaging.configs;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -14,12 +14,19 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMqConfig {
 
   public static final String QUEUE_NAME = "email-queue";
+  public static final String RESET_PASSWORD_QUEUE = "email-queue-reset-password";
+  public static final String RESET_PASSWORD_ROUTING_KEY = "routing.key.reset-password.#";
 
-  public static final String TOPIC_EXCHANGE = "email-exchange";
+  public static final String TOPIC_EXCHANGE = "app-exchange";
 
   @Bean
   public Queue queue() {
     return new Queue(QUEUE_NAME, false);
+  }
+
+  @Bean
+  public Queue resetPasswordQueue() {
+    return new Queue(RESET_PASSWORD_QUEUE, true);
   }
 
   @Bean
@@ -30,6 +37,10 @@ public class RabbitMqConfig {
   @Bean
   public Binding binding(Queue queue, TopicExchange exchange) {
     return BindingBuilder.bind(queue).to(exchange).with("routing.key.#");
+  }
+
+  public Binding resetPasswordBinding(Queue queue, TopicExchange exchange) {
+    return BindingBuilder.bind(queue).to(exchange).with(RESET_PASSWORD_ROUTING_KEY);
   }
 
   @Bean

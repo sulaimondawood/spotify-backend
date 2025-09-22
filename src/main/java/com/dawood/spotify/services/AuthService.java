@@ -11,10 +11,12 @@ import com.dawood.spotify.Exceptions.UserAlreadyExists;
 import com.dawood.spotify.Exceptions.UserException;
 import com.dawood.spotify.Exceptions.UserNotFoundException;
 import com.dawood.spotify.dtos.auth.AuthRequestDTO;
+import com.dawood.spotify.dtos.auth.ForgotPasswordDTO;
 import com.dawood.spotify.dtos.auth.RegisterResponseDTO;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.entities.VerificationCode;
 import com.dawood.spotify.messaging.publisher.MQEmailProducer;
+import com.dawood.spotify.messaging.publisher.MQForgotPasswordProducer;
 import com.dawood.spotify.repositories.UserRepository;
 import com.dawood.spotify.repositories.VerificationCodeRepository;
 import com.dawood.spotify.utils.JwtUtils;
@@ -32,6 +34,7 @@ public class AuthService {
   private final CustomUserDetailsService customUserDetailsService;
   private final VerificationCodeRepository verificationCodeRepository;
   private final MQEmailProducer mqEmailProducer;
+  private final MQForgotPasswordProducer mqForgotPasswordProducer;
 
   public RegisterResponseDTO register(AuthRequestDTO request) {
 
@@ -119,6 +122,44 @@ public class AuthService {
         .build();
 
     return registerResponseDTO;
+  }
+
+  private void forgotPassword(ForgotPasswordDTO request) {
+
+    User user = userRepository.findByEmail(request.getEmail())
+        .orElseThrow(() -> new UserException("User account not found"));
+
+    int resetCode = VerificationUtils.generateSixDigitsCode();
+
+    verificationCodeRepository.deleteById(user.getId());
+
+    VerificationCode code = new VerificationCode();
+    code.setUser(user);
+    code.setExpiresAt(LocalDateTime.now().plusMinutes(10));
+    code.setCode(resetCode);
+
+    verificationCodeRepository.save(code);
+
+    String[] parts = user.getFullname()
+        .trim()
+        .split(" ");
+
+    String firstname = parts.length > 0 ? parts[0] : "";
+
+    String body = """
+
+        Hello %s,
+
+        Here is your password reset code: %d
+
+        Kindly ignore if you didn't perform this action.
+
+        Regards,
+        Spotify-Dawood Team.
+            """.formatted(firstname, resetCode);
+
+    mqForgotPasswordProducer.sendResetPasswordMessage(user.getEmail(), "Password Reset - Spotify-Dawood",
+        body);
   }
 
 }

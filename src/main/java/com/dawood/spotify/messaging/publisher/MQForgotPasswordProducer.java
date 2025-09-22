@@ -3,30 +3,29 @@ package com.dawood.spotify.messaging.publisher;
 import java.util.Map;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.stereotype.Component;
-
-import com.dawood.spotify.messaging.configs.RabbitMqConfig;
+import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Component
-@RequiredArgsConstructor
+@Service
 @Slf4j
-public class MQEmailProducer {
+@RequiredArgsConstructor
+public class MQForgotPasswordProducer {
 
   private final RabbitTemplate rabbitTemplate;
 
-  public void sendMessage(String to, String subject, String body) {
+  public void sendResetPasswordMessage(String to, String subject, String body) {
 
     Map<String, String> message = Map.of(
         "to", to,
         "subject", subject,
         "body", body);
 
-    log.info("Message sent");
+    log.info("Message sent to exchange");
 
-    rabbitTemplate.convertAndSend(RabbitMqConfig.TOPIC_EXCHANGE, "routing.key", message);
+    rabbitTemplate.convertAndSend(message);
+
   }
 
 }
