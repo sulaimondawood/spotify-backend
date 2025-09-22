@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import com.dawood.spotify.Exceptions.user.UserAlreadyExists;
+import com.dawood.spotify.Exceptions.user.UserException;
+import com.dawood.spotify.Exceptions.verification.InvalidCodeException;
 import com.dawood.spotify.dtos.ErrorReponse;
 
 @RestControllerAdvice

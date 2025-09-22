@@ -1,4 +1,4 @@
-package com.dawood.spotify.Exceptions;
+package com.dawood.spotify.Exceptions.user;
 
 public class UserException extends RuntimeException {
 
