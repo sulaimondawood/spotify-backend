@@ -5,11 +5,12 @@ import java.time.LocalDateTime;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.dawood.spotify.Exceptions.InvalidCodeException;
-import com.dawood.spotify.Exceptions.UserAlreadyExists;
-import com.dawood.spotify.Exceptions.UserException;
-import com.dawood.spotify.Exceptions.UserNotFoundException;
+import com.dawood.spotify.Exceptions.user.UserAlreadyExists;
+import com.dawood.spotify.Exceptions.user.UserException;
+import com.dawood.spotify.Exceptions.user.UserNotFoundException;
+import com.dawood.spotify.Exceptions.verification.InvalidCodeException;
 import com.dawood.spotify.dtos.auth.AuthRequestDTO;
 import com.dawood.spotify.dtos.auth.ForgotPasswordDTO;
 import com.dawood.spotify.dtos.auth.RegisterResponseDTO;
@@ -83,7 +84,7 @@ public class AuthService {
         .orElseThrow(() -> new UserNotFoundException());
 
     if (!user.isActive()) {
-      throw new UserException("Your account is not activated!");
+      throw new UserException("Your account is not activated yet!");
     }
 
     if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
@@ -96,34 +97,6 @@ public class AuthService {
 
     return token;
 
-  }
-
-  public String activateAccount(int code) {
-
-    VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
-        .orElseThrow(() -> new InvalidCodeException("Invalid verification code"));
-
-    if (verificationCode.getExpiresAt().isBefore(LocalDateTime.now())) {
-      throw new InvalidCodeException("Verification code has expired!");
-    }
-
-    User user = verificationCode.getUser();
-    user.setActive(true);
-
-    userRepository.save(user);
-    verificationCodeRepository.delete(verificationCode);
-
-    return "User account activated!";
-  }
-
-  private RegisterResponseDTO toDTO(User user) {
-    RegisterResponseDTO registerResponseDTO = RegisterResponseDTO.builder()
-        .id(user.getId())
-        .email(user.getEmail())
-        .fullname(user.getFullname())
-        .build();
-
-    return registerResponseDTO;
   }
 
   public void forgotPassword(ForgotPasswordDTO request) {
@@ -200,6 +173,40 @@ public class AuthService {
 
     verificationCodeRepository.delete(code);
 
+  }
+
+  @Transactional
+  public String activateAccount(int code) {
+
+    VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
+        .orElseThrow(() -> new InvalidCodeException("Invalid verification code"));
+
+    if (verificationCode.getExpiresAt().isBefore(LocalDateTime.now())) {
+      throw new InvalidCodeException("Verification code has expired!");
+    }
+
+    User user = verificationCode.getUser();
+
+    if (user.isActive()) {
+      return "Account already activated";
+    }
+
+    user.setActive(true);
+
+    userRepository.save(user);
+    verificationCodeRepository.delete(verificationCode);
+
+    return "User account activated!";
+  }
+
+  private RegisterResponseDTO toDTO(User user) {
+    RegisterResponseDTO registerResponseDTO = RegisterResponseDTO.builder()
+        .id(user.getId())
+        .email(user.getEmail())
+        .fullname(user.getFullname())
+        .build();
+
+    return registerResponseDTO;
   }
 
 }
