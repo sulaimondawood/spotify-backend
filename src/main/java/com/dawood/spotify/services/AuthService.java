@@ -13,6 +13,7 @@ import com.dawood.spotify.Exceptions.UserNotFoundException;
 import com.dawood.spotify.dtos.auth.AuthRequestDTO;
 import com.dawood.spotify.dtos.auth.ForgotPasswordDTO;
 import com.dawood.spotify.dtos.auth.RegisterResponseDTO;
+import com.dawood.spotify.dtos.auth.VerifyCodeDTO;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.entities.VerificationCode;
 import com.dawood.spotify.messaging.publisher.MQEmailProducer;
@@ -160,6 +161,24 @@ public class AuthService {
 
     mqForgotPasswordProducer.sendResetPasswordMessage(user.getEmail(), "Password Reset - Spotify-Dawood",
         body);
+  }
+
+  public void verifyCode(VerifyCodeDTO codeDTO) {
+
+    User user = userRepository.findByEmail(codeDTO.getEmail())
+        .orElseThrow(() -> new UserException("User account not found"));
+
+    VerificationCode code = verificationCodeRepository.findByUserAndCode(user, codeDTO.getCode())
+        .orElseThrow(() -> new InvalidCodeException("Invalid verification code"));
+
+    if (code.getExpiresAt().isBefore(LocalDateTime.now())) {
+      throw new InvalidCodeException("Invalid or expired verification code");
+    }
+
+  }
+
+  public void passwordReset() {
+
   }
 
 }
