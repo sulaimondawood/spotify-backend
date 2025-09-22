@@ -67,7 +67,7 @@ public class AuthController {
     return ApiResponse.responseBuilder("", "OTP verified. Proceed to change your password", HttpStatus.OK);
   }
 
-  @PostMapping("/reset-passowrd")
+  @PostMapping("/reset-password")
   public ResponseEntity<Object> resetPassword(@Valid @RequestBody ResetPasswordDTO request) {
 
     authService.resetPassword(request);

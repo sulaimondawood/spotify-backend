@@ -5,6 +5,8 @@ import java.util.Map;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import com.dawood.spotify.messaging.configs.RabbitMqConfig;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +26,7 @@ public class MQForgotPasswordProducer {
 
     log.info("Message sent to exchange");
 
-    rabbitTemplate.convertAndSend(message);
+    rabbitTemplate.convertAndSend(RabbitMqConfig.TOPIC_EXCHANGE, RabbitMqConfig.RESET_PASSWORD_ROUTING_KEY, message);
 
   }
 

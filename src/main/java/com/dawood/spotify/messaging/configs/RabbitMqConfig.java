@@ -39,6 +39,7 @@ public class RabbitMqConfig {
     return BindingBuilder.bind(queue).to(exchange).with("routing.key.#");
   }
 
+  @Bean
   public Binding resetPasswordBinding(Queue queue, TopicExchange exchange) {
     return BindingBuilder.bind(queue).to(exchange).with(RESET_PASSWORD_ROUTING_KEY);
   }

@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MQForgotPasswordConsumer {
   private final EmailService emailService;
 
-  @RabbitListener(queues = { RabbitMqConfig.RESET_PASSWORD_QUEUE })
+  @RabbitListener(queues = RabbitMqConfig.RESET_PASSWORD_QUEUE)
   public void consumeResetPasswordMessage(Map<String, String> message) {
 
     String to = message.get("to");
