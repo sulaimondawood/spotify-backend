@@ -56,7 +56,7 @@ public class User {
 
   private boolean active;
 
-  @OneToOne(mappedBy = "user")
+  @OneToOne
   private ArtistProfile artistProfile;
 
   @Embedded
