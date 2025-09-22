@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dawood.spotify.dtos.ApiResponse;
 import com.dawood.spotify.dtos.auth.ActivationRequest;
 import com.dawood.spotify.dtos.auth.AuthRequestDTO;
+import com.dawood.spotify.dtos.auth.ForgotPasswordDTO;
+import com.dawood.spotify.dtos.auth.ResetPasswordDTO;
+import com.dawood.spotify.dtos.auth.VerifyCodeDTO;
 import com.dawood.spotify.services.AuthService;
 import com.dawood.spotify.validations.RegisterRequestGroup;
 
@@ -46,6 +49,30 @@ public class AuthController {
     return ApiResponse.responseBuilder(authService.activateAccount(request.getCode()),
         authService.activateAccount(request.getCode()),
         HttpStatus.OK);
+  }
+
+  @PostMapping("/forgot-password")
+  public ResponseEntity<Object> forgotPassword(@Valid @RequestBody ForgotPasswordDTO request) {
+
+    authService.forgotPassword(request);
+
+    return ApiResponse.responseBuilder("", "Reset instructions sent to your email.", HttpStatus.OK);
+  }
+
+  @PostMapping("/otp")
+  public ResponseEntity<Object> validateOtpCode(@Valid @RequestBody VerifyCodeDTO request) {
+
+    authService.verifyCode(request);
+
+    return ApiResponse.responseBuilder("", "OTP verified. Proceed to change your password", HttpStatus.OK);
+  }
+
+  @PostMapping("/reset-passowrd")
+  public ResponseEntity<Object> resetPassword(@Valid @RequestBody ResetPasswordDTO request) {
+
+    authService.resetPassword(request);
+
+    return ApiResponse.responseBuilder("", "Password reset successfully", HttpStatus.OK);
   }
 
 }

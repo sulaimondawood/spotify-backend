@@ -13,6 +13,7 @@ import com.dawood.spotify.Exceptions.UserNotFoundException;
 import com.dawood.spotify.dtos.auth.AuthRequestDTO;
 import com.dawood.spotify.dtos.auth.ForgotPasswordDTO;
 import com.dawood.spotify.dtos.auth.RegisterResponseDTO;
+import com.dawood.spotify.dtos.auth.ResetPasswordDTO;
 import com.dawood.spotify.dtos.auth.VerifyCodeDTO;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.entities.VerificationCode;
@@ -125,7 +126,7 @@ public class AuthService {
     return registerResponseDTO;
   }
 
-  private void forgotPassword(ForgotPasswordDTO request) {
+  public void forgotPassword(ForgotPasswordDTO request) {
 
     User user = userRepository.findByEmail(request.getEmail())
         .orElseThrow(() -> new UserException("User account not found"));
@@ -177,7 +178,27 @@ public class AuthService {
 
   }
 
-  public void passwordReset() {
+  public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
+
+    User user = userRepository.findByEmail(resetPasswordDTO.getEmail())
+        .orElseThrow(() -> new UserException("User account not found"));
+
+    VerificationCode code = verificationCodeRepository.findByUserAndCode(user, resetPasswordDTO.getCode())
+        .orElseThrow(() -> new InvalidCodeException("Invalid verification code"));
+
+    if (code.getExpiresAt().isBefore(LocalDateTime.now())) {
+      throw new InvalidCodeException("Expired verification code");
+    }
+
+    if (!resetPasswordDTO.getNewPassword().equals(resetPasswordDTO.getConfirmPassword())) {
+      throw new IllegalArgumentException("Password did not match Confirm Password");
+    }
+
+    user.setPassword(passwordEncoder.encode(resetPasswordDTO.getNewPassword()));
+
+    userRepository.save(user);
+
+    verificationCodeRepository.delete(code);
 
   }
 
