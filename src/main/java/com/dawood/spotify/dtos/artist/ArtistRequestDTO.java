@@ -1,7 +1,5 @@
 package com.dawood.spotify.dtos.artist;
 
-import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -22,7 +20,4 @@ public class ArtistRequestDTO {
 
   private String coverPhotoUrl;
 
-  private long monthlyListeners;
-
-  private List<String> socialMediaLinks;
 }
