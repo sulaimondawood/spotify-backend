@@ -1,4 +1,4 @@
-package com.dawood.spotify.Exceptions.verification;
+package com.dawood.spotify.exceptions.verification;
 
 public class InvalidCodeException extends RuntimeException {
 
