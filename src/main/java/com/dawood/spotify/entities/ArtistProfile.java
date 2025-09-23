@@ -41,6 +41,8 @@ public class ArtistProfile {
 
   private long monthlyListeners;
 
+  private boolean approved;
+
   private List<String> socialMediaLinks = new ArrayList<>();
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "artistProfile")
