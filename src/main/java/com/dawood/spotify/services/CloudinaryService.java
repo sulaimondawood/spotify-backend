@@ -1,31 +1,36 @@
 package com.dawood.spotify.services;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+import java.io.IOException;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class CloudinaryService {
 
-  @Value("${app.cloudinary.api-name}")
-  private String cloudApiName;
+  private final Cloudinary cloudinary;
 
-  @Value("${app.cloudinary.api-secret}")
-  private String cloudApiSecret;
+  public Map<String, Object> uploadMultipart(MultipartFile file, String name) throws IOException {
+    try {
+      return cloudinary.uploader()
+          .upload(file.getBytes(), ObjectUtils.asMap(
+              "use_filename", true,
+              "unique_filename", true,
+              "folder", "users"));
 
-  @Value("${app.cloudinary.api-key}")
-  private String cloudApiKey;
-
-  @Bean
-  public Cloudinary cloudinary() {
-    return new Cloudinary(ObjectUtils.asMap(
-        "cloud_name", cloudApiName,
-        "api_key", cloudApiKey,
-        "api_secret", cloudApiSecret,
-        "secure", true));
+    } catch (Exception e) {
+      log.error("Error uploading file {}", e.getMessage());
+      throw e;
+    }
   }
 
 }

@@ -1,9 +1,11 @@
 package com.dawood.spotify.services;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dawood.spotify.dtos.artist.ArtistRequestDTO;
 import com.dawood.spotify.dtos.artist.ArtistRequestResponseDTO;
@@ -28,8 +30,9 @@ public class ArtistRequestService {
   private final ArtistRequestRepository artistRequestRepository;
   private final UserRepository userRepository;
   private final ArtistProfileRepository artistProfileRepository;
+  private final CloudinaryService cloudinaryService;
 
-  public ArtistRequestResponseDTO upgradeToArtist(ArtistRequestDTO request) {
+  public ArtistRequestResponseDTO upgradeToArtist(ArtistRequestDTO request, MultipartFile file) throws IOException {
 
     User loggedInUser = userService.currentLoggedInUser();
 
@@ -37,13 +40,16 @@ public class ArtistRequestService {
       throw new ArtistRequestException("You've already submitted a become artist request");
     }
 
+    String photoUrl = cloudinaryService.uploadMultipart(file, request.getStageName())
+        .get("secure_url")
+        .toString();
+
     ArtistRequest artistRequest = new ArtistRequest();
 
     artistRequest.setStageName(request.getStageName());
     artistRequest.setBio(request.getBio());
     artistRequest.setGenre(request.getGenre());
-    artistRequest.setPhotoUrl(request.getPhotoUrl());
-    artistRequest.setCoverPhotoUrl(request.getCoverPhotoUrl());
+    artistRequest.setPhotoUrl(photoUrl);
     artistRequest.setStatus(ArtistRequestStatus.PENDING);
     artistRequest.setUser(loggedInUser);
     artistRequest.setCreatedAt(LocalDateTime.now());
@@ -71,7 +77,6 @@ public class ArtistRequestService {
     artistProfile.setBio(artistRequest.getBio());
     artistProfile.setGenre(artistRequest.getGenre());
     artistProfile.setPhotoUrl(artistRequest.getPhotoUrl());
-    artistProfile.setCoverPhotoUrl(artistRequest.getCoverPhotoUrl());
     artistProfile.setApproved(true);
     artistProfile.setUser(user);
 
