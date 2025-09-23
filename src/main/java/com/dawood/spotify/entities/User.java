@@ -1,22 +1,20 @@
 package com.dawood.spotify.entities;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import com.dawood.spotify.enums.RoleType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -50,8 +48,6 @@ public class User {
 
   private String coverPhotoUrl;
 
-  private String bio;
-
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<VerificationCode> code = new ArrayList<>();
 
@@ -60,13 +56,11 @@ public class User {
 
   private boolean active;
 
-  @CreationTimestamp
-  @Column(updatable = false)
-  private LocalDateTime createdAt;
+  @OneToOne
+  private ArtistProfile artistProfile;
 
-  @UpdateTimestamp
-  @Column
-  private LocalDateTime updatedAt;
+  @Embedded
+  private Audit audit = new Audit();
 
   @PrePersist
   public void prePersist() {

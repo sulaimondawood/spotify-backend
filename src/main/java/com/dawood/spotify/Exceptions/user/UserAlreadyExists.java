@@ -1,4 +1,4 @@
-package com.dawood.spotify.Exceptions.user;
+package com.dawood.spotify.exceptions.user;
 
 public class UserAlreadyExists extends RuntimeException {
 

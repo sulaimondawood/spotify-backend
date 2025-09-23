@@ -45,3 +45,9 @@ logging:
 app:
   jwt:
     secret: ${JWT_SECRET}
+
+  cloudinary:
+    api-secret: ${CLOUDINARY_API_SECRET}
+    api-key: ${CLOUDINARY_API_KEY}
+    api-url: ${CLOUDINARY_URL}
+    api-name: ${CLOUDINARY_API_NAME}

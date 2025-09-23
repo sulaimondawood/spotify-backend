@@ -1,4 +1,4 @@
-package com.dawood.spotify.Exceptions;
+package com.dawood.spotify.exceptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +13,40 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import com.dawood.spotify.Exceptions.user.UserAlreadyExists;
-import com.dawood.spotify.Exceptions.user.UserException;
-import com.dawood.spotify.Exceptions.verification.InvalidCodeException;
 import com.dawood.spotify.dtos.ErrorReponse;
+import com.dawood.spotify.exceptions.artist.ArtistException;
+import com.dawood.spotify.exceptions.artist.ArtistRequestException;
+import com.dawood.spotify.exceptions.user.UserAlreadyExists;
+import com.dawood.spotify.exceptions.user.UserException;
+import com.dawood.spotify.exceptions.verification.InvalidCodeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+  @ExceptionHandler(ArtistException.class)
+  public ResponseEntity<ErrorReponse> artistExceptionHandler(
+      ArtistException ex) {
+
+    ErrorReponse response = new ErrorReponse();
+
+    response.setMessage(ex.getMessage());
+    response.setStatus(HttpStatus.BAD_REQUEST.value());
+
+    return ResponseEntity.badRequest().body(response);
+
+  }
+
+  @ExceptionHandler(ArtistRequestException.class)
+  public ResponseEntity<ErrorReponse> artistRequestExceptionHandler(
+      ArtistRequestException ex) {
+
+    ErrorReponse response = new ErrorReponse();
+
+    response.setMessage(ex.getMessage());
+    response.setStatus(HttpStatus.BAD_REQUEST.value());
+
+    return ResponseEntity.badRequest().body(response);
+  }
 
   @ExceptionHandler(InvalidCodeException.class)
   public ResponseEntity<ErrorReponse> InvalidCodeExceptionHandler(
