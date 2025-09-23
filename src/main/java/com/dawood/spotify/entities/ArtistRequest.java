@@ -42,6 +42,8 @@ public class ArtistRequest {
 
   private String coverPhotoUrl;
 
+  private String rejectionReason;
+
   @Enumerated(EnumType.STRING)
   private ArtistRequestStatus status;
 
