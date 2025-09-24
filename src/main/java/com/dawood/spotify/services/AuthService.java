@@ -14,6 +14,7 @@ import com.dawood.spotify.dtos.auth.ResetPasswordDTO;
 import com.dawood.spotify.dtos.auth.VerifyCodeDTO;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.entities.VerificationCode;
+import com.dawood.spotify.enums.RoleType;
 import com.dawood.spotify.exceptions.user.UserAlreadyExists;
 import com.dawood.spotify.exceptions.user.UserException;
 import com.dawood.spotify.exceptions.user.UserNotFoundException;
@@ -50,7 +51,7 @@ public class AuthService {
     user.setFullname(request.getFullname());
     user.setEmail(request.getEmail());
     user.setPassword(passwordEncoder.encode(request.getPassword()));
-    user.getRoles().add(request.getRole());
+    user.getRoles().add(RoleType.USER);
 
     User savedUser = userRepository.save(user);
 
@@ -81,7 +82,7 @@ public class AuthService {
   public String login(AuthRequestDTO requestDTO) {
 
     User user = userRepository.findByEmail(requestDTO.getEmail())
-        .orElseThrow(() -> new UserNotFoundException());
+        .orElseThrow(() -> new UserNotFoundException("User does not exists"));
 
     if (!user.isActive()) {
       throw new UserException("Your account is not activated yet!");

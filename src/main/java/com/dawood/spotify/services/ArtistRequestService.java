@@ -32,7 +32,7 @@ public class ArtistRequestService {
   private final ArtistProfileRepository artistProfileRepository;
   private final CloudinaryService cloudinaryService;
 
-  public ArtistRequestResponseDTO upgradeToArtist(ArtistRequestDTO request, MultipartFile file) throws IOException {
+  public ArtistRequestResponseDTO becomeAnArtist(ArtistRequestDTO request, MultipartFile file) throws IOException {
 
     User loggedInUser = userService.currentLoggedInUser();
 

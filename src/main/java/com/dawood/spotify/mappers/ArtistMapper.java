@@ -13,7 +13,10 @@ public class ArtistMapper {
     artistResponseDTO.setBio(request.getBio());
     artistResponseDTO.setGenre(request.getGenre());
     artistResponseDTO.setPhotoUrl(request.getPhotoUrl());
+    artistResponseDTO.setStatus(request.getStatus());
+    artistResponseDTO.setCreatedAt(request.getCreatedAt());
     artistResponseDTO.setCoverPhotoUrl(request.getCoverPhotoUrl());
+    artistResponseDTO.setRejectionReason(request.getRejectionReason());
 
     return artistResponseDTO;
 
