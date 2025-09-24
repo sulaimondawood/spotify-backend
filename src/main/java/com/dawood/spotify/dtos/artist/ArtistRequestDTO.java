@@ -15,9 +15,4 @@ public class ArtistRequestDTO {
   @NotBlank(message = "Pick a genre")
   private String genre;
 
-  @NotBlank(message = "Profile image is required")
-  private String photoUrl;
-
-  private String coverPhotoUrl;
-
 }
