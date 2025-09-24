@@ -51,3 +51,7 @@ app:
     api-key: ${CLOUDINARY_API_KEY}
     api-url: ${CLOUDINARY_URL}
     api-name: ${CLOUDINARY_API_NAME}
+
+  seeder:
+    super-admin-email: ${SUPER_ADMIN_EMAIL}
+    super-admin-password: ${SUPER_ADMIN_PASSWORD}

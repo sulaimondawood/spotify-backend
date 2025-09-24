@@ -18,6 +18,7 @@ import com.dawood.spotify.exceptions.artist.ArtistException;
 import com.dawood.spotify.exceptions.artist.ArtistRequestException;
 import com.dawood.spotify.exceptions.user.UserAlreadyExists;
 import com.dawood.spotify.exceptions.user.UserException;
+import com.dawood.spotify.exceptions.user.UserNotFoundException;
 import com.dawood.spotify.exceptions.verification.InvalidCodeException;
 
 @RestControllerAdvice
@@ -64,6 +65,19 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(UserException.class)
   public ResponseEntity<ErrorReponse> userExceptionHandler(
       UserException ex) {
+
+    ErrorReponse response = new ErrorReponse();
+
+    response.setMessage(ex.getMessage());
+    response.setStatus(HttpStatus.BAD_REQUEST.value());
+
+    return ResponseEntity.badRequest().body(response);
+
+  }
+
+  @ExceptionHandler(UserNotFoundException.class)
+  public ResponseEntity<ErrorReponse> userNotFoundExceptionHandler(
+      UserNotFoundException ex) {
 
     ErrorReponse response = new ErrorReponse();
 

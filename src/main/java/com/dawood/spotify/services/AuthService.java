@@ -82,7 +82,7 @@ public class AuthService {
   public String login(AuthRequestDTO requestDTO) {
 
     User user = userRepository.findByEmail(requestDTO.getEmail())
-        .orElseThrow(() -> new UserNotFoundException());
+        .orElseThrow(() -> new UserNotFoundException("User does not exists"));
 
     if (!user.isActive()) {
       throw new UserException("Your account is not activated yet!");

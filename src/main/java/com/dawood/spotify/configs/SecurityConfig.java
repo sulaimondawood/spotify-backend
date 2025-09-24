@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.dawood.spotify.enums.RoleType;
 import com.dawood.spotify.utils.ErrorResponseWriter;
 
 import jakarta.servlet.ServletException;
@@ -34,6 +35,7 @@ public class SecurityConfig {
     httpSecurity
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(authRequest -> authRequest.requestMatchers("/auth/**", "/health", "/status").permitAll()
+            .requestMatchers("/super/**").hasRole(RoleType.SUPER_ADMIN.name())
             .anyRequest().authenticated())
         .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint())
             .accessDeniedHandler(accessDeniedHandler()))
