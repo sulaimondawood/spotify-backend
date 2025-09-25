@@ -5,7 +5,7 @@ import com.dawood.spotify.entities.User;
 
 public class UserMapper {
 
-  public UserResponseDTO tDTO(User user) {
+  public static UserResponseDTO tDTO(User user) {
 
     UserResponseDTO responseDTO = new UserResponseDTO();
     responseDTO.setId(user.getId());

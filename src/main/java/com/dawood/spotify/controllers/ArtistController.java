@@ -21,7 +21,7 @@ public class ArtistController {
   @GetMapping
   public ResponseEntity<Object> getCurrentArtist() {
     return ResponseEntity.ok().body(ApiResponse.responseBuilder(
-        userService.currentLoggedInUser(),
+        userService.currentLoggedInUser().getArtistProfile(),
         "Your info has been fetched successfully",
         HttpStatus.OK));
   }

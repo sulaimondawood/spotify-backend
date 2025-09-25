@@ -14,6 +14,7 @@ import com.dawood.spotify.entities.ArtistRequest;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.enums.ArtistRequestStatus;
 import com.dawood.spotify.enums.RoleType;
+import com.dawood.spotify.exceptions.artist.ArtistException;
 import com.dawood.spotify.exceptions.artist.ArtistRequestException;
 import com.dawood.spotify.mappers.ArtistMapper;
 import com.dawood.spotify.repositories.ArtistProfileRepository;
@@ -35,6 +36,10 @@ public class ArtistRequestService {
   public ArtistRequestResponseDTO becomeAnArtist(ArtistRequestDTO request, MultipartFile file) throws IOException {
 
     User loggedInUser = userService.currentLoggedInUser();
+
+    if (artistProfileRepository.existsByStageName(request.getStageName())) {
+      throw new ArtistException("Artist with stage name already exists");
+    }
 
     if (artistRequestRepository.existsByUserAndStatus(loggedInUser, ArtistRequestStatus.PENDING)) {
       throw new ArtistRequestException("You've already submitted a become artist request");
@@ -64,13 +69,16 @@ public class ArtistRequestService {
     ArtistRequest artistRequest = artistRequestRepository.findById(artistRequestId)
         .orElseThrow(() -> new ArtistRequestException("Artist request not found!"));
 
+    if (artistProfileRepository.existsByStageName(artistRequest.getStageName())) {
+      throw new ArtistException("Artist with stage name already exists");
+    }
+
     if (!artistRequest.getStatus().equals(ArtistRequestStatus.PENDING)) {
       throw new ArtistRequestException("Request already processed!");
     }
 
     User user = artistRequest.getUser();
     user.getRoles().add(RoleType.ARTIST);
-    userRepository.save(user);
 
     ArtistProfile artistProfile = new ArtistProfile();
     artistProfile.setStageName(artistRequest.getStageName());
@@ -81,6 +89,9 @@ public class ArtistRequestService {
     artistProfile.setUser(user);
 
     artistProfileRepository.save(artistProfile);
+
+    user.setArtistProfile(artistProfile);
+    userRepository.save(user);
 
     artistRequest.setStatus(ArtistRequestStatus.APPROVED);
     ArtistRequest savedArtistRequest = artistRequestRepository.save(artistRequest);

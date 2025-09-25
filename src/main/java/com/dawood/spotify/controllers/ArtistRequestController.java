@@ -36,7 +36,7 @@ public class ArtistRequestController {
     ArtistRequestResponseDTO data = artistRequestService.becomeAnArtist(request, image);
 
     return ResponseEntity.ok()
-        .body(ApiResponse.responseBuilder(data, "You have become an artist", HttpStatus.OK));
+        .body(ApiResponse.responseBuilder(data, "Your information is being reviewed", HttpStatus.OK));
   }
 
 }
