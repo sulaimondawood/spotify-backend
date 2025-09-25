@@ -36,6 +36,7 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(authRequest -> authRequest.requestMatchers("/auth/**", "/health", "/status").permitAll()
             .requestMatchers("/super/**").hasRole(RoleType.SUPER_ADMIN.name())
+            .requestMatchers("/artists/**").hasRole(RoleType.ARTIST.name())
             .anyRequest().authenticated())
         .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint())
             .accessDeniedHandler(accessDeniedHandler()))
