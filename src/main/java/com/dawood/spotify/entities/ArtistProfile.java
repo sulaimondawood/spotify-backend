@@ -3,6 +3,8 @@ package com.dawood.spotify.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -51,7 +53,8 @@ public class ArtistProfile {
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "artistProfile")
   private List<Song> songs = new ArrayList<>();
 
-  @OneToOne(mappedBy = "artistProfile")
+  @OneToOne
+  @JsonIgnore
   private User user;
 
   @Embedded

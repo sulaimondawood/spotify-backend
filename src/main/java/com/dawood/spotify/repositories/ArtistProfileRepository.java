@@ -6,4 +6,6 @@ import com.dawood.spotify.entities.ArtistProfile;
 
 public interface ArtistProfileRepository extends JpaRepository<ArtistProfile, Long> {
 
+  boolean existsByStageName(String stageName);
+
 }

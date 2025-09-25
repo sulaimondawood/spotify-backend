@@ -2,6 +2,7 @@ package com.dawood.spotify.entities;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +32,7 @@ public class Song {
 
   private int duration;
 
+  @Column(nullable = false)
   private String audioUrl;
 
   private String coverArtUrl;

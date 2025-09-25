@@ -10,7 +10,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -47,7 +47,7 @@ public class ArtistRequest {
   @Enumerated(EnumType.STRING)
   private ArtistRequestStatus status;
 
-  @OneToOne
+  @ManyToOne
   private User user;
 
   private LocalDateTime createdAt;

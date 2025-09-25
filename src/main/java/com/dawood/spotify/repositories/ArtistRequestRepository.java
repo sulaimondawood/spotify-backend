@@ -18,6 +18,10 @@ public interface ArtistRequestRepository extends JpaRepository<ArtistRequest, Lo
 
   boolean existsByUser(User user);
 
+  boolean existsByStageName(String stageName);
+
+  boolean existsByUserAndStatus(User user, ArtistRequestStatus status);
+
   @Query("""
       SELECT ar FROM ArtistRequest ar
       WHERE ( :status IS NULL OR ar.status = :status)
