@@ -36,7 +36,7 @@ public class ArtistRequestService {
 
     User loggedInUser = userService.currentLoggedInUser();
 
-    if (artistRequestRepository.existsByUser(loggedInUser)) {
+    if (artistRequestRepository.existsByUserAndStatus(loggedInUser, ArtistRequestStatus.PENDING)) {
       throw new ArtistRequestException("You've already submitted a become artist request");
     }
 
