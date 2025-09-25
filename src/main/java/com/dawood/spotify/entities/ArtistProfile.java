@@ -51,7 +51,7 @@ public class ArtistProfile {
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "artistProfile")
   private List<Song> songs = new ArrayList<>();
 
-  @OneToOne(mappedBy = "artistProfile")
+  @OneToOne
   private User user;
 
   @Embedded

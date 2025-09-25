@@ -14,7 +14,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -56,8 +55,8 @@ public class User {
 
   private boolean active;
 
-  @OneToOne
-  private ArtistProfile artistProfile;
+  // @OneToOne
+  // private ArtistProfile artistProfile;
 
   @Embedded
   private Audit audit = new Audit();

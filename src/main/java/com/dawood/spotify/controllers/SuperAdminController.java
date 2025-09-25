@@ -1,18 +1,20 @@
 package com.dawood.spotify.controllers;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Map;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dawood.spotify.dtos.ApiResponse;
+import com.dawood.spotify.dtos.artist.ArtistRequestResponseDTO;
 import com.dawood.spotify.enums.ArtistRequestStatus;
+import com.dawood.spotify.services.ArtistRequestService;
 import com.dawood.spotify.services.SuperAdminService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,8 +22,9 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/super")
-public class AdminController {
+public class SuperAdminController {
 
+  private final ArtistRequestService artistRequestService;
   private final SuperAdminService superAdminService;
 
   @GetMapping("/become-artist-request")
@@ -37,6 +40,31 @@ public class AdminController {
         superAdminService.getAllBecomeArtistRequests(pageNo, pageSize, status, keyword, startDate, endDate),
         "All become an artist fetched successfully",
         HttpStatus.OK);
+  }
+
+  @GetMapping("/{artistRequestId}/approve-artist-request")
+  public ResponseEntity<?> approveArtistRequest(@PathVariable Long artistRequestId) {
+
+    return ResponseEntity.ok().body(ApiResponse.responseBuilder(
+        artistRequestService.approveArtistRequest(artistRequestId),
+        "Artist request has been approved",
+        HttpStatus.OK));
+
+  }
+
+  @GetMapping("/{artistRequestId}/reject-artist-request")
+  public ResponseEntity<?> rejectArtistRequest(Long artistRequestId, Map<String, String> message) {
+
+    String rejectionReason = message.get("message");
+
+    ArtistRequestResponseDTO artistRequestResponseDTO = artistRequestService.rejectArtistRequest(artistRequestId,
+        rejectionReason);
+
+    return ResponseEntity.ok().body(ApiResponse.responseBuilder(
+        artistRequestResponseDTO,
+        "Artist request has been rejected",
+        HttpStatus.OK));
+
   }
 
 }
