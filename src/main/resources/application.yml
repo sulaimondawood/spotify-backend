@@ -6,6 +6,10 @@ spring:
   application:
     name: spotify
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+
   config:
     import: optional:file:.env.local[.properties]
 

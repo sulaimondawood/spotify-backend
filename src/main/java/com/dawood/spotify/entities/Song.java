@@ -30,7 +30,7 @@ public class Song {
 
   private String genre;
 
-  private int duration;
+  private double duration;
 
   @Column(nullable = false)
   private String audioUrl;

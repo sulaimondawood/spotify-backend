@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dawood.spotify.dtos.song.SongDTO;
 import com.dawood.spotify.entities.ArtistProfile;
 import com.dawood.spotify.entities.Song;
 import com.dawood.spotify.entities.User;
+import com.dawood.spotify.mappers.SongMapper;
 import com.dawood.spotify.repositories.SongRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,31 +26,38 @@ public class ArtistService {
   private final UserService userService;
   private final CloudinaryService cloudinaryService;
 
+  @Transactional
   public SongDTO uploadSong(SongDTO payload, MultipartFile audioFile, MultipartFile coverArtFile) throws IOException {
 
     User currentLoggedInUser = userService.currentLoggedInUser();
     ArtistProfile artistProfile = currentLoggedInUser.getArtistProfile();
 
-    Map<String, Object> data = cloudinaryService.uploadMultipart(audioFile, payload.getName());
+    Map<String, Object> data = cloudinaryService.uploadMultipart(audioFile, payload.getName(), "video");
+
+    Double songDuration = (Double) data.get("duration");
 
     String audioUrl = data.get("secure_url").toString();
 
     log.info(audioUrl);
     log.info(data.toString());
 
-    String coverArtUrl = cloudinaryService.uploadMultipart(coverArtFile, payload.getName() + "_cover").get("secure_url")
+    String coverArtUrl = cloudinaryService.uploadMultipart(coverArtFile, payload.getName() + "_cover")
+        .get("secure_url")
         .toString();
 
     Song newSong = new Song();
     newSong.setName(payload.getName());
     newSong.setGenre(payload.getGenre());
-    // newSong.setDuration(null);
+    newSong.setDuration(songDuration);
+    newSong.setPlayCount(0);
     newSong.setAudioUrl(audioUrl);
     newSong.setCoverArtUrl(coverArtUrl);
     newSong.setReleaseDate(payload.getReleaseDate());
     newSong.setArtistProfile(artistProfile);
 
-    return null;
+    Song savedSong = songRepository.save(newSong);
+
+    return SongMapper.toDTO(savedSong);
 
   }
 
