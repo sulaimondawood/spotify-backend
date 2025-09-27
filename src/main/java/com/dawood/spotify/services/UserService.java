@@ -1,5 +1,6 @@
 package com.dawood.spotify.services;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ public class UserService {
 
   private final UserRepository userRepository;
 
+  @Cacheable(cacheNames = "currentUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
   public User currentLoggedInUser() {
     String username = SecurityContextHolder.getContext()
         .getAuthentication()
