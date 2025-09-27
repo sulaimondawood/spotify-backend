@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dawood.spotify.enums.RoleType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -49,6 +50,7 @@ public class User {
   private String coverPhotoUrl;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonBackReference
   private List<VerificationCode> code = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)

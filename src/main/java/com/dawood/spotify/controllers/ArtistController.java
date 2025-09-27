@@ -1,6 +1,10 @@
 package com.dawood.spotify.controllers;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,10 +45,16 @@ public class ArtistController {
       @RequestPart("trackFile") MultipartFile trackFile,
       @RequestPart("coverArtFile") MultipartFile coverArtFile) throws IOException {
 
-    return ResponseEntity.ok().body(ApiResponse.responseBuilder(
-        artistService.uploadSong(payload, trackFile, coverArtFile),
-        "Your song has been uploaded",
-        HttpStatus.OK));
+    Path audioPath = Files.createTempFile("audio_", trackFile.getOriginalFilename());
+    Path coverArtPath = Files.createTempFile("cover_", coverArtFile.getOriginalFilename());
+
+    trackFile.transferTo(audioPath);
+    coverArtFile.transferTo(coverArtPath);
+
+    return ResponseEntity.accepted().body(ApiResponse.responseBuilder(
+        artistService.uploadSong(payload),
+        "Uploading your song...",
+        HttpStatus.ACCEPTED));
   }
 
 }

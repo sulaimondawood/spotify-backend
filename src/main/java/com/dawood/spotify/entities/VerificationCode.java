@@ -2,6 +2,8 @@ package com.dawood.spotify.entities;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -31,6 +33,7 @@ public class VerificationCode {
   private LocalDateTime expiresAt;
 
   @ManyToOne
+  @JsonManagedReference
   private User user;
 
 }
