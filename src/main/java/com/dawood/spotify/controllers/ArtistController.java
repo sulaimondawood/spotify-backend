@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dawood.spotify.dtos.ApiResponse;
 import com.dawood.spotify.dtos.song.SongDTO;
+import com.dawood.spotify.dtos.song.UploadSongMessage;
+import com.dawood.spotify.messaging.publishers.SongUploadProducer;
 import com.dawood.spotify.services.ArtistService;
 import com.dawood.spotify.services.UserService;
 
@@ -30,6 +32,7 @@ public class ArtistController {
 
   private final UserService userService;
   private final ArtistService artistService;
+  private final SongUploadProducer songUploadProducer;
 
   @GetMapping
   public ResponseEntity<Object> getCurrentArtist() {
@@ -45,11 +48,29 @@ public class ArtistController {
       @RequestPart("trackFile") MultipartFile trackFile,
       @RequestPart("coverArtFile") MultipartFile coverArtFile) throws IOException {
 
+    if (trackFile.isEmpty()) {
+      return ResponseEntity.badRequest()
+          .body(ApiResponse.responseBuilder("", "Song file is empty", HttpStatus.BAD_REQUEST));
+    }
+    if (coverArtFile.isEmpty()) {
+      return ResponseEntity.badRequest()
+          .body(ApiResponse.responseBuilder("", "Cover image is empty", HttpStatus.BAD_REQUEST));
+    }
+
     Path audioPath = Files.createTempFile("audio_", trackFile.getOriginalFilename());
     Path coverArtPath = Files.createTempFile("cover_", coverArtFile.getOriginalFilename());
-
     trackFile.transferTo(audioPath);
     coverArtFile.transferTo(coverArtPath);
+
+    UploadSongMessage message = new UploadSongMessage();
+    message.setAudioFilePath(audioPath.toString());
+    message.setCoverArtFilePath(coverArtPath.toString());
+    message.setGenre(payload.getGenre());
+    message.setReleaseDate(payload.getReleaseDate());
+    message.setSongName(payload.getName());
+    message.setUserId(userService.currentLoggedInUser().getId());
+
+    songUploadProducer.sendMessage(message);
 
     return ResponseEntity.accepted().body(ApiResponse.responseBuilder(
         artistService.uploadSong(payload),

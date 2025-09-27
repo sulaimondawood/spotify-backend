@@ -14,10 +14,17 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMqConfig {
 
   public static final String QUEUE_NAME = "email-queue";
+  public static final String SONG_UPLOAD_QUEUE_NAME = "song-upload-queue";
   public static final String RESET_PASSWORD_QUEUE = "email-queue-reset-password";
   public static final String RESET_PASSWORD_ROUTING_KEY = "routing.key.reset-password.#";
+  public static final String SONG_UPLOAD_ROUTING_KEY = "routing.key.song-upload.#";
 
   public static final String TOPIC_EXCHANGE = "app-exchange";
+
+  @Bean
+  public TopicExchange exchange() {
+    return new TopicExchange(TOPIC_EXCHANGE);
+  }
 
   @Bean
   public Queue queue() {
@@ -30,8 +37,8 @@ public class RabbitMqConfig {
   }
 
   @Bean
-  public TopicExchange exchange() {
-    return new TopicExchange(TOPIC_EXCHANGE);
+  public Queue songUploadQueue() {
+    return new Queue(SONG_UPLOAD_QUEUE_NAME);
   }
 
   @Bean
@@ -42,6 +49,11 @@ public class RabbitMqConfig {
   @Bean
   public Binding resetPasswordBinding(Queue queue, TopicExchange exchange) {
     return BindingBuilder.bind(queue).to(exchange).with(RESET_PASSWORD_ROUTING_KEY);
+  }
+
+  @Bean
+  public Binding songUploadBinding(Queue songUploadQueue, TopicExchange exchange) {
+    return BindingBuilder.bind(songUploadQueue).to(exchange).with(SONG_UPLOAD_ROUTING_KEY);
   }
 
   @Bean
