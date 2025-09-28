@@ -1,9 +1,12 @@
 package com.dawood.spotify.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -47,7 +50,12 @@ public class Song {
   @ManyToOne
   private Album album;
 
-  @Embedded
-  private Audit audit = new Audit();
+  @CreationTimestamp
+  @Column(updatable = false)
+  private LocalDateTime createdAt;
+
+  @UpdateTimestamp
+  @Column
+  private LocalDateTime updatedAt;
 
 }
