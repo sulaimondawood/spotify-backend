@@ -10,14 +10,28 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
+@RequiredArgsConstructor
 public class RabbitMqConfig {
 
   public static final String QUEUE_NAME = "email-queue";
+  public static final String SONG_UPLOAD_QUEUE_NAME = "song-upload-queue";
   public static final String RESET_PASSWORD_QUEUE = "email-queue-reset-password";
   public static final String RESET_PASSWORD_ROUTING_KEY = "routing.key.reset-password.#";
+  public static final String SONG_UPLOAD_ROUTING_KEY = "routing.key.song-upload.#";
 
   public static final String TOPIC_EXCHANGE = "app-exchange";
+
+  private final ObjectMapper objectMapper;
+
+  @Bean
+  public TopicExchange exchange() {
+    return new TopicExchange(TOPIC_EXCHANGE);
+  }
 
   @Bean
   public Queue queue() {
@@ -30,13 +44,13 @@ public class RabbitMqConfig {
   }
 
   @Bean
-  public TopicExchange exchange() {
-    return new TopicExchange(TOPIC_EXCHANGE);
+  public Queue songUploadQueue() {
+    return new Queue(SONG_UPLOAD_QUEUE_NAME);
   }
 
   @Bean
   public Binding binding(Queue queue, TopicExchange exchange) {
-    return BindingBuilder.bind(queue).to(exchange).with("routing.key.#");
+    return BindingBuilder.bind(queue).to(exchange).with("routing.key");
   }
 
   @Bean
@@ -45,8 +59,13 @@ public class RabbitMqConfig {
   }
 
   @Bean
+  public Binding songUploadBinding(Queue songUploadQueue, TopicExchange exchange) {
+    return BindingBuilder.bind(songUploadQueue).to(exchange).with(SONG_UPLOAD_ROUTING_KEY);
+  }
+
+  @Bean
   public Jackson2JsonMessageConverter jsonMessageConverter() {
-    return new Jackson2JsonMessageConverter();
+    return new Jackson2JsonMessageConverter(objectMapper);
   }
 
   @Bean
