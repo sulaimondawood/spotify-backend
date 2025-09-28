@@ -10,7 +10,6 @@ import com.dawood.spotify.dtos.song.SongDTO;
 import com.dawood.spotify.entities.SongUploadJob;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.enums.UploadStatus;
-import com.dawood.spotify.repositories.SongRepository;
 import com.dawood.spotify.repositories.SongUploadJobRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,9 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ArtistService {
 
-  private final SongRepository songRepository;
   private final UserService userService;
-  private final CloudinaryService cloudinaryService;
+
   private final SongUploadJobRepository songUploadJobRepository;
 
   @Transactional

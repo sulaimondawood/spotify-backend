@@ -11,11 +11,14 @@ import org.springframework.stereotype.Component;
 import com.dawood.spotify.dtos.song.UploadSongMessage;
 import com.dawood.spotify.entities.Song;
 import com.dawood.spotify.entities.SongUploadJob;
+import com.dawood.spotify.entities.User;
 import com.dawood.spotify.enums.UploadStatus;
 import com.dawood.spotify.exceptions.song.SongNotFoundException;
+import com.dawood.spotify.exceptions.user.UserNotFoundException;
 import com.dawood.spotify.messaging.configs.RabbitMqConfig;
 import com.dawood.spotify.repositories.SongRepository;
 import com.dawood.spotify.repositories.SongUploadJobRepository;
+import com.dawood.spotify.repositories.UserRepository;
 import com.dawood.spotify.services.CloudinaryService;
 import com.dawood.spotify.services.UserService;
 
@@ -29,8 +32,8 @@ public class SongUploadConsumer {
 
   private final CloudinaryService cloudinaryService;
   private final SongUploadJobRepository songUploadJobRepository;
-  private final UserService userService;
   private final SongRepository songRepository;
+  private final UserRepository userRepository;
 
   @RabbitListener(queues = RabbitMqConfig.SONG_UPLOAD_QUEUE_NAME)
   public void consumeMessage(UploadSongMessage message) {
@@ -38,6 +41,9 @@ public class SongUploadConsumer {
 
     SongUploadJob songUploadJob = songUploadJobRepository.findById(message.getUploadId())
         .orElseThrow(() -> new SongNotFoundException());
+
+    User user = userRepository.findById(message.getUserId())
+        .orElseThrow(() -> new UserNotFoundException());
 
     try {
 
@@ -64,7 +70,7 @@ public class SongUploadConsumer {
       Map<String, Object> audioData = audioFuture.join();
 
       Song song = new Song();
-      song.setArtistProfile(userService.currentLoggedInUser().getArtistProfile());
+      song.setArtistProfile(user.getArtistProfile());
       song.setAudioUrl(audioData.get("secure_url").toString());
       song.setCoverArtUrl(coverImageData.get("secure_url").toString());
       song.setReleaseDate(message.getReleaseDate());
@@ -81,7 +87,7 @@ public class SongUploadConsumer {
 
     } catch (Exception e) {
       songUploadJob.setStatus(UploadStatus.FAILED);
-      songUploadJob.setMessage("Upload failed: " + e.getMessage());
+      songUploadJob.setMessage("Upload failed");
       log.error("Upload job {} failed", message.getUploadId(), e);
     }
 

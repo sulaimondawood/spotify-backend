@@ -10,7 +10,12 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
+@RequiredArgsConstructor
 public class RabbitMqConfig {
 
   public static final String QUEUE_NAME = "email-queue";
@@ -20,6 +25,8 @@ public class RabbitMqConfig {
   public static final String SONG_UPLOAD_ROUTING_KEY = "routing.key.song-upload.#";
 
   public static final String TOPIC_EXCHANGE = "app-exchange";
+
+  private final ObjectMapper objectMapper;
 
   @Bean
   public TopicExchange exchange() {
@@ -58,7 +65,7 @@ public class RabbitMqConfig {
 
   @Bean
   public Jackson2JsonMessageConverter jsonMessageConverter() {
-    return new Jackson2JsonMessageConverter();
+    return new Jackson2JsonMessageConverter(objectMapper);
   }
 
   @Bean
