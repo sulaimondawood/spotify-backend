@@ -61,8 +61,15 @@ public class ArtistService {
       LocalDate startDate,
       LocalDate endDate) {
 
-    LocalDateTime startDateTime = startDate.atStartOfDay();
-    LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+    LocalDateTime startDateTime = null;
+    LocalDateTime endDateTime = null;
+
+    if (startDate != null) {
+      startDateTime = startDate.atStartOfDay();
+    }
+    if (endDate != null) {
+      endDateTime = endDate.atTime(LocalTime.MAX);
+    }
 
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
 

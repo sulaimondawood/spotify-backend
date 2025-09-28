@@ -127,7 +127,10 @@ public class ArtistController {
     meta.setPageSize(pagedSong.getSize());
     meta.setTotalPages(pagedSong.getTotalPages());
 
-    return ApiResponse.responseBuilder(songs, "Your songs have been fetched successfully", HttpStatus.OK, meta);
+    return ApiResponse.responseBuilder(
+        songs,
+        "Your songs have been fetched successfully",
+        HttpStatus.OK, meta);
   }
 
 }

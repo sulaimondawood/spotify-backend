@@ -20,7 +20,6 @@ public class SongMapper {
     responseDTO.setPlayCount(song.getPlayCount());
     responseDTO.setArtistProfile(song.getArtistProfile());
     responseDTO.setAlbum(song.getAlbum());
-    responseDTO.setAudit(song.getAudit());
 
     return responseDTO;
 
