@@ -130,7 +130,8 @@ public class ArtistController {
     return ApiResponse.responseBuilder(
         songs,
         "Your songs have been fetched successfully",
-        HttpStatus.OK, meta);
+        HttpStatus.OK,
+        meta);
   }
 
 }
