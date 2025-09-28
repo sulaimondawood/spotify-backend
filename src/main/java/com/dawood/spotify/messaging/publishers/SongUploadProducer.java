@@ -16,7 +16,7 @@ public class SongUploadProducer {
 
   private final RabbitTemplate rabbitTemplate;
 
-  public void sendMessage(UploadSongMessage message) {
+  public void convertAndSendMessage(UploadSongMessage message) {
 
     log.info("Song message producer activated...");
 

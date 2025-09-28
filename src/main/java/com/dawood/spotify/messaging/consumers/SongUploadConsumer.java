@@ -20,7 +20,6 @@ import com.dawood.spotify.repositories.SongRepository;
 import com.dawood.spotify.repositories.SongUploadJobRepository;
 import com.dawood.spotify.repositories.UserRepository;
 import com.dawood.spotify.services.CloudinaryService;
-import com.dawood.spotify.services.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +89,6 @@ public class SongUploadConsumer {
       songUploadJob.setMessage("Upload failed");
       log.error("Upload job {} failed", message.getUploadId(), e);
     }
-
     songUploadJobRepository.save(songUploadJob);
 
     new File(message.getAudioFilePath()).delete();

@@ -25,7 +25,7 @@ public class ArtistService {
   private final SongUploadJobRepository songUploadJobRepository;
 
   @Transactional
-  public SongUploadJob uploadSong(SongDTO payload)
+  public SongUploadJob preUploadSong(SongDTO payload)
       throws IOException {
 
     User currentLoggedInUser = userService.currentLoggedInUser();

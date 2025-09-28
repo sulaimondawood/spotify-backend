@@ -1,10 +1,8 @@
 package com.dawood.spotify.controllers;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +21,6 @@ import com.dawood.spotify.entities.SongUploadJob;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.exceptions.user.UserNotFoundException;
 import com.dawood.spotify.messaging.publishers.SongUploadProducer;
-import com.dawood.spotify.repositories.SongUploadJobRepository;
 import com.dawood.spotify.repositories.UserRepository;
 import com.dawood.spotify.services.ArtistService;
 import com.dawood.spotify.services.UserService;
@@ -40,7 +37,6 @@ public class ArtistController {
   private final UserService userService;
   private final UserRepository userRepository;
   private final ArtistService artistService;
-  private final SongUploadJobRepository songUploadJobRepository;
   private final SongUploadProducer songUploadProducer;
   private final JwtUtils jwtUtils;
 
@@ -53,7 +49,7 @@ public class ArtistController {
   }
 
   @PostMapping("/upload/song")
-  public ResponseEntity<Object> uploadSong(
+  public ResponseEntity<Object> preUploadSong(
       @RequestHeader("Authorization") String authToken,
       @Valid @RequestPart SongDTO payload,
       @RequestPart("trackFile") MultipartFile trackFile,
@@ -61,11 +57,16 @@ public class ArtistController {
 
     if (trackFile.isEmpty()) {
       return ResponseEntity.badRequest()
-          .body(ApiResponse.responseBuilder("", "Song file is empty", HttpStatus.BAD_REQUEST));
+          .body(ApiResponse.responseBuilder("",
+              "Song file is empty",
+              HttpStatus.BAD_REQUEST));
     }
     if (coverArtFile.isEmpty()) {
       return ResponseEntity.badRequest()
-          .body(ApiResponse.responseBuilder("", "Cover image is empty", HttpStatus.BAD_REQUEST));
+          .body(ApiResponse.responseBuilder(
+              "",
+              "Cover image is empty",
+              HttpStatus.BAD_REQUEST));
     }
 
     Path audioPath = Files.createTempFile("audio_", trackFile.getOriginalFilename());
@@ -73,12 +74,13 @@ public class ArtistController {
     trackFile.transferTo(audioPath);
     coverArtFile.transferTo(coverArtPath);
 
-    SongUploadJob preSongUpload = artistService.uploadSong(payload);
+    SongUploadJob preSongUpload = artistService.preUploadSong(payload);
 
     String token = authToken.substring(7);
     String email = jwtUtils.getUsernameFromToken(token);
 
-    User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new UserNotFoundException());
 
     UploadSongMessage message = new UploadSongMessage();
     message.setAudioFilePath(audioPath.toString());
@@ -89,7 +91,7 @@ public class ArtistController {
     message.setUploadId(preSongUpload.getId());
     message.setUserId(user.getId());
 
-    songUploadProducer.sendMessage(message);
+    songUploadProducer.convertAndSendMessage(message);
 
     return ResponseEntity.accepted().body(ApiResponse.responseBuilder(
         preSongUpload,
