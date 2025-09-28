@@ -78,7 +78,7 @@ public class ArtistService {
 
   public SongDTO getArtistSongById(Long songId) {
 
-    Song song = songRepository.findByIdAndUser(songId, userService.currentLoggedInUser())
+    Song song = songRepository.findById(songId)
         .orElseThrow(() -> new SongNotFoundException());
 
     return SongMapper.toDTO(song);
