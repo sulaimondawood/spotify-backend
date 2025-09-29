@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dawood.spotify.dtos.ApiResponse;
+import com.dawood.spotify.dtos.playlist.PlaylistSongRequest;
 import com.dawood.spotify.exceptions.playlist.PlaylistException;
 import com.dawood.spotify.services.PlaylistService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -76,6 +78,18 @@ public class PlaylistController {
     return ApiResponse.responseBuilder(
         "",
         "Your playlist rename was successfull",
+        HttpStatus.OK);
+
+  }
+
+  @PostMapping("/add")
+  public ResponseEntity<Object> addSongsPlaylist(@Valid @RequestBody PlaylistSongRequest payload) {
+
+    playlistService.addSongsToPlaylist(payload);
+
+    return ApiResponse.responseBuilder(
+        "",
+        "Your playlist was updated successfully",
         HttpStatus.OK);
 
   }
