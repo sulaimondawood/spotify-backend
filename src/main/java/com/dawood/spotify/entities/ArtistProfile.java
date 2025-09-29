@@ -49,10 +49,6 @@ public class ArtistProfile {
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "artistProfile")
   @JsonIgnore
-  private List<Album> albums = new ArrayList<>();
-
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "artistProfile")
-  @JsonIgnore
   private List<Song> songs = new ArrayList<>();
 
   @OneToOne

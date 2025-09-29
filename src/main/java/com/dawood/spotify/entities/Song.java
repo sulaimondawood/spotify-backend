@@ -47,9 +47,6 @@ public class Song {
   @ManyToOne
   private ArtistProfile artistProfile;
 
-  @ManyToOne
-  private Album album;
-
   @CreationTimestamp
   @Column(updatable = false)
   private LocalDateTime createdAt;
