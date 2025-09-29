@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import com.dawood.spotify.enums.UploadStatus;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

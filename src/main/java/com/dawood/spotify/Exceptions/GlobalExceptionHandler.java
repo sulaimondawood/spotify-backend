@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSendException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -177,6 +178,19 @@ public class GlobalExceptionHandler {
     ErrorReponse response = new ErrorReponse();
 
     response.setMessage("Invalid request payload");
+    response.setStatus(HttpStatus.BAD_REQUEST.value());
+
+    return ResponseEntity.badRequest().body(response);
+
+  }
+
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  public ResponseEntity<ErrorReponse> httpRequestMethodNotSupportedExceptionHandler(
+      HttpRequestMethodNotSupportedException ex) {
+
+    ErrorReponse response = new ErrorReponse();
+
+    response.setMessage(ex.getMessage());
     response.setStatus(HttpStatus.BAD_REQUEST.value());
 
     return ResponseEntity.badRequest().body(response);
