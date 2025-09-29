@@ -16,6 +16,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import com.dawood.spotify.dtos.ErrorReponse;
 import com.dawood.spotify.exceptions.artist.ArtistException;
 import com.dawood.spotify.exceptions.artist.ArtistRequestException;
+import com.dawood.spotify.exceptions.playlist.PlaylistException;
 import com.dawood.spotify.exceptions.song.SongNotFoundException;
 import com.dawood.spotify.exceptions.user.UserAlreadyExists;
 import com.dawood.spotify.exceptions.user.UserException;
@@ -24,6 +25,19 @@ import com.dawood.spotify.exceptions.verification.InvalidCodeException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+  @ExceptionHandler(PlaylistException.class)
+  public ResponseEntity<ErrorReponse> playlistExceptionHandler(
+      PlaylistException ex) {
+
+    ErrorReponse response = new ErrorReponse();
+
+    response.setMessage(ex.getMessage());
+    response.setStatus(HttpStatus.BAD_REQUEST.value());
+
+    return ResponseEntity.badRequest().body(response);
+
+  }
 
   @ExceptionHandler(SongNotFoundException.class)
   public ResponseEntity<ErrorReponse> songNotFoundExceptionHandler(
