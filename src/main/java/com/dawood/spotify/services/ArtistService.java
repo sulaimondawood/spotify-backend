@@ -18,6 +18,7 @@ import com.dawood.spotify.entities.Song;
 import com.dawood.spotify.entities.SongUploadJob;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.enums.UploadStatus;
+import com.dawood.spotify.exceptions.artist.ArtistException;
 import com.dawood.spotify.exceptions.song.SongNotFoundException;
 import com.dawood.spotify.mappers.SongMapper;
 import com.dawood.spotify.repositories.SongRepository;
@@ -71,7 +72,14 @@ public class ArtistService {
 
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
 
-    Page<Song> pagedSongs = songRepository.getAllSongsWithFilters(keyword, startDateTime, endDateTime, pageable);
+    User user = userService.currentLoggedInUser();
+
+    Page<Song> pagedSongs = songRepository.getAllSongsWithFilters(
+        keyword,
+        startDateTime,
+        endDateTime,
+        user.getId(),
+        pageable);
 
     return pagedSongs;
   }
@@ -82,6 +90,19 @@ public class ArtistService {
         .orElseThrow(() -> new SongNotFoundException());
 
     return SongMapper.toDTO(song);
+  }
+
+  public void deleteArtistSongById(Long songId) {
+
+    Song song = songRepository.findById(songId)
+        .orElseThrow(() -> new SongNotFoundException());
+
+    if (userService.currentLoggedInUser().equals(song.getArtistProfile().getUser())) {
+      throw new ArtistException("Action is not allowed!");
+    }
+
+    songRepository.deleteById(songId);
+
   }
 
 }

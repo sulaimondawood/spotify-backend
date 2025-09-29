@@ -17,12 +17,13 @@ public interface SongRepository extends JpaRepository<Song, Long> {
       WHERE (:keyword IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :keyword,'%')))
       AND (:startDate IS NULL OR s.createdAt>= :startDate)
       AND (:endDate IS NULL OR s.createdAt <= :endDate)
-
+      AND (:userId IS NULL OR s.artistProfile.user.id=:userId)
         """)
   Page<Song> getAllSongsWithFilters(
       @Param("keyword") String keyword,
       @Param("startDate") LocalDateTime startDate,
       @Param("endDate") LocalDateTime endDate,
+      @Param("userId") Long userId,
       Pageable pageable);
 
 }
