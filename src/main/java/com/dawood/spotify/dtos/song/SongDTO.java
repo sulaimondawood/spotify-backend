@@ -2,7 +2,6 @@ package com.dawood.spotify.dtos.song;
 
 import java.time.LocalDate;
 
-import com.dawood.spotify.entities.Album;
 import com.dawood.spotify.entities.ArtistProfile;
 import com.dawood.spotify.entities.Audit;
 
@@ -33,8 +32,6 @@ public class SongDTO {
   private long playCount;
 
   private ArtistProfile artistProfile;
-
-  private Album album;
 
   private Audit audit = new Audit();
 

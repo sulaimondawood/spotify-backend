@@ -2,14 +2,27 @@ package com.dawood.spotify.services;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dawood.spotify.dtos.song.SongDTO;
+import com.dawood.spotify.entities.ArtistProfile;
+import com.dawood.spotify.entities.Song;
 import com.dawood.spotify.entities.SongUploadJob;
 import com.dawood.spotify.entities.User;
 import com.dawood.spotify.enums.UploadStatus;
+import com.dawood.spotify.exceptions.artist.ArtistException;
+import com.dawood.spotify.exceptions.song.SongNotFoundException;
+import com.dawood.spotify.mappers.SongMapper;
+import com.dawood.spotify.repositories.SongRepository;
 import com.dawood.spotify.repositories.SongUploadJobRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ArtistService {
 
   private final UserService userService;
-
+  private final SongRepository songRepository;
   private final SongUploadJobRepository songUploadJobRepository;
 
   @Transactional
@@ -38,6 +51,65 @@ public class ArtistService {
     job.setUser(currentLoggedInUser);
 
     return songUploadJobRepository.save(job);
+
+  }
+
+  public Page<Song> getArtistSongs(
+      int pageNo,
+      int pageSize,
+      String keyword,
+      LocalDate startDate,
+      LocalDate endDate) {
+
+    LocalDateTime startDateTime = null;
+    LocalDateTime endDateTime = null;
+
+    if (startDate != null) {
+      startDateTime = startDate.atStartOfDay();
+    }
+    if (endDate != null) {
+      endDateTime = endDate.atTime(LocalTime.MAX);
+    }
+
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
+
+    User user = userService.currentLoggedInUser();
+
+    Page<Song> pagedSongs = songRepository.getAllSongsWithFilters(
+        keyword,
+        startDateTime,
+        endDateTime,
+        user.getId(),
+        pageable);
+
+    return pagedSongs;
+  }
+
+  public SongDTO getArtistSongById(Long songId) {
+
+    Song song = songRepository.findById(songId)
+        .orElseThrow(() -> new SongNotFoundException());
+
+    return SongMapper.toDTO(song);
+  }
+
+  public void deleteArtistSongById(Long songId) {
+
+    Song song = songRepository.findById(songId)
+        .orElseThrow(() -> new SongNotFoundException());
+
+    User currentUser = userService.currentLoggedInUser();
+
+    if (!currentUser.getId().equals(song.getArtistProfile().getUser().getId())) {
+      throw new ArtistException("Action is not allowed! You can only remove your songs");
+    }
+
+    songUploadJobRepository.findBySong(song).ifPresent(songUploadJobRepository::delete);
+
+    ArtistProfile artistProfile = song.getArtistProfile();
+    artistProfile.getSongs().remove(song);
+
+    songRepository.delete(song);
 
   }
 

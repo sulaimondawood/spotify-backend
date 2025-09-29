@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import com.dawood.spotify.enums.UploadStatus;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -41,7 +40,7 @@ public class SongUploadJob {
   @ManyToOne(fetch = FetchType.LAZY)
   private User user;
 
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToOne(fetch = FetchType.LAZY)
   private Song song;
 
   private Instant createAt = Instant.now();

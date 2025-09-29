@@ -19,8 +19,6 @@ public class SongMapper {
     responseDTO.setReleaseDate(song.getReleaseDate());
     responseDTO.setPlayCount(song.getPlayCount());
     responseDTO.setArtistProfile(song.getArtistProfile());
-    responseDTO.setAlbum(song.getAlbum());
-    responseDTO.setAudit(song.getAudit());
 
     return responseDTO;
 
