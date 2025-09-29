@@ -41,7 +41,7 @@ public class SongUploadJob {
   @ManyToOne(fetch = FetchType.LAZY)
   private User user;
 
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToOne(fetch = FetchType.LAZY)
   private Song song;
 
   private Instant createAt = Instant.now();

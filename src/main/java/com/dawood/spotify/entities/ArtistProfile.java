@@ -56,5 +56,5 @@ public class ArtistProfile {
   private User user;
 
   @Embedded
-  private Audit audit = new Audit();
+  private Audit audit;
 }

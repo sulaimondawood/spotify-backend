@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dawood.spotify.dtos.song.SongDTO;
+import com.dawood.spotify.entities.ArtistProfile;
 import com.dawood.spotify.entities.Song;
 import com.dawood.spotify.entities.SongUploadJob;
 import com.dawood.spotify.entities.User;
@@ -97,11 +98,18 @@ public class ArtistService {
     Song song = songRepository.findById(songId)
         .orElseThrow(() -> new SongNotFoundException());
 
-    if (userService.currentLoggedInUser().equals(song.getArtistProfile().getUser())) {
-      throw new ArtistException("Action is not allowed!");
+    User currentUser = userService.currentLoggedInUser();
+
+    if (!currentUser.getId().equals(song.getArtistProfile().getUser().getId())) {
+      throw new ArtistException("Action is not allowed! You can only remove your songs");
     }
 
-    songRepository.deleteById(songId);
+    songUploadJobRepository.findBySong(song).ifPresent(songUploadJobRepository::delete);
+
+    ArtistProfile artistProfile = song.getArtistProfile();
+    artistProfile.getSongs().remove(song);
+
+    songRepository.delete(song);
 
   }
 

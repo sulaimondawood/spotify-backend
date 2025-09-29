@@ -143,12 +143,14 @@ public class ArtistController {
         "Song details fetched successfully", HttpStatus.OK);
   }
 
-  @DeleteMapping("/{songId}")
+  @DeleteMapping("/song/{songId}")
   public ResponseEntity<Object> deleteArtistSongById(@PathVariable Long songId) {
+
+    artistService.deleteArtistSongById(songId);
 
     return ApiResponse.responseBuilder("",
         "Your song has been removed successfuly",
-        HttpStatus.NO_CONTENT);
+        HttpStatus.OK);
   }
 
 }
