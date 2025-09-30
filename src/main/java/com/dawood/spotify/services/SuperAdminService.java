@@ -31,7 +31,6 @@ public class SuperAdminService {
 
   private final ArtistRequestRepository artistRequestRepository;
   private final SongRepository songRepository;
-
   private final SongUploadJobRepository songUploadJobRepository;
 
   public List<ArtistRequestResponseDTO> getAllBecomeArtistRequests(int pageNo, int pageSize, ArtistRequestStatus status,
