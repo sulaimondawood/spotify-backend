@@ -17,6 +17,7 @@ import com.dawood.spotify.enums.RoleType;
 import com.dawood.spotify.exceptions.artist.ArtistException;
 import com.dawood.spotify.exceptions.artist.ArtistRequestException;
 import com.dawood.spotify.mappers.ArtistMapper;
+import com.dawood.spotify.messaging.publishers.MQEmailProducer;
 import com.dawood.spotify.repositories.ArtistProfileRepository;
 import com.dawood.spotify.repositories.ArtistRequestRepository;
 import com.dawood.spotify.repositories.UserRepository;
@@ -32,6 +33,7 @@ public class ArtistRequestService {
   private final UserRepository userRepository;
   private final ArtistProfileRepository artistProfileRepository;
   private final CloudinaryService cloudinaryService;
+  private final MQEmailProducer mqEmailProducer;
 
   public ArtistRequestResponseDTO becomeAnArtist(ArtistRequestDTO request, MultipartFile file) throws IOException {
 
@@ -58,6 +60,21 @@ public class ArtistRequestService {
     artistRequest.setStatus(ArtistRequestStatus.PENDING);
     artistRequest.setUser(loggedInUser);
     artistRequest.setCreatedAt(LocalDateTime.now());
+
+    String body = """
+
+        Hello there,
+
+        Your request to become an artist is currently being processed.
+
+        Kindly exercise patient, while the team review your application.
+
+        Regards,
+        Dawood team.
+
+          """;
+
+    mqEmailProducer.sendMessage(loggedInUser.getEmail(), "Become an Artist Request", body);
 
     return ArtistMapper.toArtistDTO(artistRequestRepository.save(artistRequest));
 
@@ -96,11 +113,28 @@ public class ArtistRequestService {
     artistRequest.setStatus(ArtistRequestStatus.APPROVED);
     ArtistRequest savedArtistRequest = artistRequestRepository.save(artistRequest);
 
+    String body = """
+
+        Hello there,
+
+        Your request to become an artist was approved.
+
+        You can now proceed to uploading songs.
+
+        Regards,
+        Dawood team.
+
+          """;
+
+    mqEmailProducer.sendMessage(user.getEmail(), "Become an Artist Request - Approved", body);
+
     return ArtistMapper.toArtistDTO(savedArtistRequest);
 
   }
 
   public ArtistRequestResponseDTO rejectArtistRequest(Long artistRequestId, String rejectionReason) {
+
+    User loggedInUser = userService.currentLoggedInUser();
 
     ArtistRequest artistRequest = artistRequestRepository.findById(artistRequestId)
         .orElseThrow(() -> new ArtistRequestException("Artist request not found!"));
@@ -113,6 +147,21 @@ public class ArtistRequestService {
     artistRequest.setStatus(ArtistRequestStatus.REJECTED);
 
     ArtistRequest savedArtistRequest = artistRequestRepository.save(artistRequest);
+
+    String body = """
+
+        Hello there,
+
+        Your request to become an artist was rejected.
+
+        You can try again some other time.
+
+        Regards,
+        Dawood team.
+
+          """;
+
+    mqEmailProducer.sendMessage(loggedInUser.getEmail(), "Become an Artist Request - Rejected", body);
 
     return ArtistMapper.toArtistDTO(savedArtistRequest);
   }
