@@ -1,6 +1,7 @@
 package com.dawood.spotify.repositories;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,5 +26,14 @@ public interface SongRepository extends JpaRepository<Song, Long> {
       @Param("endDate") LocalDateTime endDate,
       @Param("userId") Long userId,
       Pageable pageable);
+
+  @Query("""
+      SELECT s FROM Song s
+      WHERE (s.genre = :genre OR s.artistProfile.user.id=:artistId)
+      ORDER BY s.releaseDate DESC LIMIT 10
+      """)
+  List<Song> getRelatedSongs(
+      @Param("genre") String genre,
+      @Param("userId") Long artistId);
 
 }
