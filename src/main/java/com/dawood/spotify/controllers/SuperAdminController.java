@@ -22,8 +22,10 @@ import com.dawood.spotify.dtos.Meta;
 import com.dawood.spotify.dtos.artist.ArtistRequestResponseDTO;
 import com.dawood.spotify.dtos.artist.RejectionRequest;
 import com.dawood.spotify.dtos.song.SongDTO;
+import com.dawood.spotify.entities.ArtistRequest;
 import com.dawood.spotify.entities.Song;
 import com.dawood.spotify.enums.ArtistRequestStatus;
+import com.dawood.spotify.mappers.ArtistMapper;
 import com.dawood.spotify.mappers.SongMapper;
 import com.dawood.spotify.services.ArtistRequestService;
 import com.dawood.spotify.services.SongService;
@@ -60,10 +62,26 @@ public class SuperAdminController {
       @RequestParam(required = false) LocalDate startDate,
       @RequestParam(required = false) LocalDate endDate) {
 
+    Page<ArtistRequest> artistRequests = superAdminService.getAllBecomeArtistRequests(pageNo, pageSize, status, keyword,
+        startDate, endDate);
+
+    Meta meta = new Meta();
+    meta.setPageNo(artistRequests.getNumber());
+    meta.setPageSize(artistRequests.getSize());
+    meta.setTotalPages(artistRequests.getTotalPages());
+    meta.setHasNext(artistRequests.hasNext());
+    meta.setHasPrev(artistRequests.hasPrevious());
+
+    List<ArtistRequestResponseDTO> response = artistRequests.getContent()
+        .stream()
+        .map(ArtistMapper::toArtistDTO)
+        .toList();
+
     return ApiResponse.responseBuilder(
-        superAdminService.getAllBecomeArtistRequests(pageNo, pageSize, status, keyword, startDate, endDate),
+        response,
         "All become an artist fetched successfully",
-        HttpStatus.OK);
+        HttpStatus.OK,
+        meta);
   }
 
   @GetMapping("/{artistRequestId}/approve-artist-request")
