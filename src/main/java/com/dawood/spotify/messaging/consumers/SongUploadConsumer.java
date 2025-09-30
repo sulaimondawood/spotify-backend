@@ -16,6 +16,7 @@ import com.dawood.spotify.enums.UploadStatus;
 import com.dawood.spotify.exceptions.song.SongNotFoundException;
 import com.dawood.spotify.exceptions.user.UserNotFoundException;
 import com.dawood.spotify.messaging.configs.RabbitMqConfig;
+import com.dawood.spotify.messaging.publishers.MQEmailProducer;
 import com.dawood.spotify.repositories.SongRepository;
 import com.dawood.spotify.repositories.SongUploadJobRepository;
 import com.dawood.spotify.repositories.UserRepository;
@@ -33,6 +34,7 @@ public class SongUploadConsumer {
   private final SongUploadJobRepository songUploadJobRepository;
   private final SongRepository songRepository;
   private final UserRepository userRepository;
+  private final MQEmailProducer mqEmailProducer;
 
   @RabbitListener(queues = RabbitMqConfig.SONG_UPLOAD_QUEUE_NAME)
   public void consumeMessage(UploadSongMessage message) {
@@ -83,6 +85,20 @@ public class SongUploadConsumer {
       songUploadJob.setStatus(UploadStatus.COMPLETED);
       songUploadJob.setMessage("Upload completed successfully");
       songUploadJob.setSong(song);
+
+      String body = """
+
+          Hey there,
+
+          Your new song was uploaded successfully.
+
+          Regards
+
+          Spotify-Dawood team.
+
+            """;
+
+      mqEmailProducer.sendMessage(user.getEmail(), "You've Sucessfully Upload your Song", body);
 
     } catch (Exception e) {
       songUploadJob.setStatus(UploadStatus.FAILED);
