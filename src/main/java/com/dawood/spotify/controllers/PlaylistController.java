@@ -94,4 +94,16 @@ public class PlaylistController {
 
   }
 
+  @DeleteMapping("/remove")
+  public ResponseEntity<Object> removeSongFromPlaylist(@Valid @RequestBody PlaylistSongRequest payload) {
+
+    playlistService.removeSongFromPlaylist(payload);
+
+    return ApiResponse.responseBuilder(
+        "",
+        "Your playlist was updated successfully",
+        HttpStatus.OK);
+
+  }
+
 }

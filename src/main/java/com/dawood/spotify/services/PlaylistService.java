@@ -77,4 +77,21 @@ public class PlaylistService {
 
   }
 
+  public void removeSongFromPlaylist(PlaylistSongRequest request) {
+
+    Playlist playlist = playlistRepository.findByUserAndId(userService.currentLoggedInUser(), request.getPlaylistId())
+        .orElseThrow(() -> new PlaylistException("Playlist does not exist"));
+
+    List<Song> songs = songRepository.findAllById(request.getSongs());
+
+    songs.forEach((song) -> {
+      if (playlist.getSongs().contains(song)) {
+        playlist.getSongs().remove(song);
+      }
+    });
+
+    playlistRepository.save(playlist);
+
+  }
+
 }
