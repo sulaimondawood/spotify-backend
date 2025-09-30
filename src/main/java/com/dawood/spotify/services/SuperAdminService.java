@@ -13,10 +13,15 @@ import org.springframework.stereotype.Service;
 
 import com.dawood.spotify.dtos.Meta;
 import com.dawood.spotify.dtos.artist.ArtistRequestResponseDTO;
+import com.dawood.spotify.entities.ArtistProfile;
 import com.dawood.spotify.entities.ArtistRequest;
+import com.dawood.spotify.entities.Song;
 import com.dawood.spotify.enums.ArtistRequestStatus;
+import com.dawood.spotify.exceptions.song.SongNotFoundException;
 import com.dawood.spotify.mappers.ArtistMapper;
 import com.dawood.spotify.repositories.ArtistRequestRepository;
+import com.dawood.spotify.repositories.SongRepository;
+import com.dawood.spotify.repositories.SongUploadJobRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +30,9 @@ import lombok.RequiredArgsConstructor;
 public class SuperAdminService {
 
   private final ArtistRequestRepository artistRequestRepository;
+  private final SongRepository songRepository;
+
+  private final SongUploadJobRepository songUploadJobRepository;
 
   public List<ArtistRequestResponseDTO> getAllBecomeArtistRequests(int pageNo, int pageSize, ArtistRequestStatus status,
       String keyword, LocalDate startDate, LocalDate endDate) {
@@ -61,6 +69,20 @@ public class SuperAdminService {
         .toList();
 
     return response;
+
+  }
+
+  public void deleteArtistSongById(Long songId) {
+
+    Song song = songRepository.findById(songId)
+        .orElseThrow(() -> new SongNotFoundException());
+
+    songUploadJobRepository.findBySong(song).ifPresent(songUploadJobRepository::delete);
+
+    ArtistProfile artistProfile = song.getArtistProfile();
+    artistProfile.getSongs().remove(song);
+
+    songRepository.delete(song);
 
   }
 
