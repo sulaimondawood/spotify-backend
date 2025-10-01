@@ -14,9 +14,3 @@ services:
     image: redis:8.2
     ports:
       - "6379:6379"
-
-  app:
-    container_name: spotify-app
-    build: .
-    ports:
-      - 8080:8080
