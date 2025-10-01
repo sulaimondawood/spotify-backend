@@ -1,16 +1,23 @@
 services:
-  rabbitMq:
-    container_name: rabbitMq
-    image: rabbitmq:4.1.4-management-alpine
+  app:
+    build: .
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - 8080:8080
     environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
+      SPRING_RABBITMQ_HOST: ${RBMQ_HOST}
+      SPRING_RABBITMQ_PORT: 5671
+      SPRING_RABBITMQ_USERNAME: ${RBMQ_USERNAME}
+      SPRING_RABBITMQ_PASSWORD: ${RBMQ_PASSWORD}
+    env_file: .env.local
+    restart: unless-stopped
 
-  redis:
-    container_name: redis
-    image: redis:8.2
-    ports:
-      - "6379:6379"
+  # rabbitmq:
+  #   container_name: rabbitMq
+  #   image: rabbitmq:4.1.4-management-alpine
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  # environment:
+  #   RABBITMQ_DEFAULT_USER: ${RBMQ_USERNAME}
+  #   RABBITMQ_DEFAULT_PASS: ${RBMQ_PASSWORD}
+  # restart: unless-stopped

@@ -19,7 +19,6 @@ spring:
     url: ${DB_URL}
 
   jpa:
-    database: mysql
     hibernate:
       ddl-auto: update
 
@@ -36,20 +35,23 @@ spring:
             enable: true
 
   rabbitmq:
-    host: localhost
-    port: 5672
+    # host: localhost
+    host: ${RBMQ_HOST}
+    port: 5671
     username: ${RBMQ_PASSWORD}
     password: ${RBMQ_PASSWORD}
+    ssl:
+      enabled: true
 
   flyway:
     baseline-on-migrate: true
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-  cache:
-    type: redis
+  # data:
+  #   redis:
+  #     host: localhost
+  #     port: 6379
+  # cache:
+  #   type: redis
 
 logging:
   level:
