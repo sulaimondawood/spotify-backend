@@ -6,19 +6,19 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_HOST: ${RBMQ_HOST}
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: ${RBMQ_USERNAME}
       SPRING_RABBITMQ_PASSWORD: ${RBMQ_PASSWORD}
     restart: unless-stopped
 
-  rabbitmq:
-    container_name: rabbitMq
-    image: rabbitmq:4.1.4-management-alpine
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RBMQ_USERNAME}
-      RABBITMQ_DEFAULT_PASS: ${RBMQ_PASSWORD}
-    restart: unless-stopped
+  # rabbitmq:
+  #   container_name: rabbitMq
+  #   image: rabbitmq:4.1.4-management-alpine
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  # environment:
+  #   RABBITMQ_DEFAULT_USER: ${RBMQ_USERNAME}
+  #   RABBITMQ_DEFAULT_PASS: ${RBMQ_PASSWORD}
+  # restart: unless-stopped
