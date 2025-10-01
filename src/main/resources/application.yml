@@ -19,7 +19,6 @@ spring:
     url: ${DB_URL}
 
   jpa:
-    database: mysql
     hibernate:
       ddl-auto: update
 
@@ -38,7 +37,7 @@ spring:
   rabbitmq:
     # host: localhost
     host: ${RBMQ_HOST}
-    port: 5672
+    port: 5671
     username: ${RBMQ_PASSWORD}
     password: ${RBMQ_PASSWORD}
     ssl:

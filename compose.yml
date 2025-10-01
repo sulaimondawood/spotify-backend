@@ -3,13 +3,12 @@ services:
     build: .
     ports:
       - 8080:8080
-    depends_on:
-      - rabbitmq
     environment:
       SPRING_RABBITMQ_HOST: ${RBMQ_HOST}
-      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_PORT: 5671
       SPRING_RABBITMQ_USERNAME: ${RBMQ_USERNAME}
       SPRING_RABBITMQ_PASSWORD: ${RBMQ_PASSWORD}
+    env_file: .env.local
     restart: unless-stopped
 
   # rabbitmq:
